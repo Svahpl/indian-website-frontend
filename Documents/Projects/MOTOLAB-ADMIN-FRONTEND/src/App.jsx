@@ -9,8 +9,9 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
         </Routes>
+        {/* REACT-TOASTIFY */}
         <ToastContainer />
-      </div>
+      </div>      
     </>
   );
 }
