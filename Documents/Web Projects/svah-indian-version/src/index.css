@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bg-green {
+  background-color: #1d3825;
+}
+
+.font-green {
+  color: #1d3825;
+}
+
+.border-green {
+  border: #1d3825 solid 2px;
+}
+
+.footerContainer {
+  margin-top: 600px;
+}
+
+@media screen and (max-width: 768px) {
+  .bg-mobile-green {
+    background-color: #1d3825;
+  }
+  .mui-white {
+    color: white;
+  }
+  .categorySearchContainer {
+    margin: 0 auto;
+    padding: 0 1.2rem;
+  }
+}
+
+@layer base {
+  img {
+    display: initial;
+  }
+}
