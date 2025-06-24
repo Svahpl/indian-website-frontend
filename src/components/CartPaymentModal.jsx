@@ -29,6 +29,10 @@ const CartPaymentModal = ({
   const [reloadPaypal, setReloadPaypal] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [deliveryCharges, setDeliveryCharges] = useState({
+    air: 1000, // Default values
+    ship: 700,
+  });
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
@@ -52,37 +56,52 @@ const CartPaymentModal = ({
 
   const handleShippingCharges = useCallback(
     (method) => {
-      if (!dollar) return; // Don't calculate if dollar rate isn't available
+      if (!dollar) return;
 
       let shippingPrice = 0;
+      const { air, ship } = deliveryCharges;
 
       if (method === "ship") {
-        shippingPrice = totalWeight * (700 / dollar);
+        shippingPrice = totalWeight * (ship / dollar);
       } else if (method === "air") {
-        shippingPrice = totalWeight * (1000 / dollar);
+        shippingPrice = totalWeight * (air / dollar);
       }
 
       setShippingCost(shippingPrice);
       setFinalPrice(totalPrice + shippingPrice);
     },
-    [totalWeight, totalPrice, dollar]
+    [totalWeight, totalPrice, dollar, deliveryCharges]
   );
 
   const getCurrentDollarinInr = useCallback(async () => {
     try {
-      setIsInitializing(true);
       const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
       const inr = res.data.rates.INR;
       setDollar(inr);
       console.log("Current dollar rate in INR:", inr);
-      setIsInitializing(false);
     } catch (error) {
       console.error(`Error fetching current dollar price in INR: ${error}`);
-      // Fallback to a reasonable rate if API fails
-      setDollar(83.5); // Average rate as fallback
-      setIsInitializing(false);
+      setDollar(83.5);
     }
   }, []);
+
+  // Fetch delivery charges from API
+  const fetchDeliveryCharges = useCallback(async () => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/charge/getcharge`);
+      if (res.data.delcharge && res.data.delcharge.length > 0) {
+        const { aircharge, shipcharge } = res.data.delcharge[0];
+        setDeliveryCharges({
+          air: aircharge,
+          ship: shipcharge,
+        });
+        console.log("Fetched delivery charges:", aircharge, shipcharge);
+      }
+    } catch (error) {
+      console.error("Error fetching delivery charges:", error);
+      toast.error("Failed to load delivery charges. Using default values.");
+    }
+  }, [backendUrl]);
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
@@ -92,16 +111,22 @@ const CartPaymentModal = ({
     });
   }, [getCurrentDollarinInr]);
 
-  // Initialize with dollar rate
+  // Initialize with dollar rate and delivery charges
   useEffect(() => {
     if (showPaymentModal) {
-      getCurrentDollarinInr();
-    }
-  }, [showPaymentModal, getCurrentDollarinInr]);
+      setIsInitializing(true);
 
-  // Calculate shipping and final price when dollar rate or other dependencies change
+      Promise.all([getCurrentDollarinInr(), fetchDeliveryCharges()]).finally(
+        () => {
+          setIsInitializing(false);
+        }
+      );
+    }
+  }, [showPaymentModal, getCurrentDollarinInr, fetchDeliveryCharges]);
+
+  // Calculate shipping and final price when dependencies change
   useEffect(() => {
-    if (!dollar) return; // Don't proceed if dollar rate isn't available
+    if (!dollar) return;
 
     setFinalWeight(totalWeight);
 
@@ -110,9 +135,15 @@ const CartPaymentModal = ({
     }
 
     handleShippingCharges(shippingMethod);
-  }, [totalWeight, shippingMethod, handleShippingCharges, dollar]);
+  }, [
+    totalWeight,
+    shippingMethod,
+    handleShippingCharges,
+    dollar,
+    deliveryCharges,
+  ]);
 
-  // Fetch user data after dollar rate is initialized
+  // Fetch user data after initialization
   useEffect(() => {
     if (!showPaymentModal || isInitializing) return;
 
@@ -230,11 +261,10 @@ const CartPaymentModal = ({
         <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-700 mx-auto mb-4"></div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Loading Current Exchange Rates
+            Loading Current Rates
           </h3>
           <p className="text-gray-600">
-            Please wait while we fetch the latest dollar to INR conversion
-            rate...
+            Please wait while we fetch the latest rates and charges...
           </p>
         </div>
       </div>
@@ -437,7 +467,10 @@ const CartPaymentModal = ({
                     <div className="text-center">
                       <div className="font-medium text-sm">Air Shipping</div>
                       <div className="text-xs text-gray-500">
-                        ${formatPrice(totalWeight * (1000 / dollar))}
+                        $
+                        {formatPrice(
+                          totalWeight * (deliveryCharges.air / dollar)
+                        )}
                       </div>
                       <div className="text-xs text-gray-500">5-7 days</div>
                     </div>
@@ -462,7 +495,10 @@ const CartPaymentModal = ({
                       <div className="text-center">
                         <div className="font-medium text-sm">Sea Shipping</div>
                         <div className="text-xs text-gray-500">
-                          ${formatPrice(totalWeight * (700 / dollar))}
+                          $
+                          {formatPrice(
+                            totalWeight * (deliveryCharges.ship / dollar)
+                          )}
                         </div>
                         <div className="text-xs text-gray-500">15-25 days</div>
                       </div>
@@ -753,7 +789,10 @@ const CartPaymentModal = ({
                           </div>
                           <div className="text-right">
                             <span className="text-sm font-semibold text-gray-900">
-                              ${formatPrice(totalWeight * (1000 / dollar))}
+                              $
+                              {formatPrice(
+                                totalWeight * (deliveryCharges.air / dollar)
+                              )}
                             </span>
                           </div>
                         </label>
@@ -786,7 +825,10 @@ const CartPaymentModal = ({
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-semibold text-gray-900">
-                                ${formatPrice(totalWeight * (700 / dollar))}
+                                $
+                                {formatPrice(
+                                  totalWeight * (deliveryCharges.ship / dollar)
+                                )}
                               </span>
                             </div>
                           </label>

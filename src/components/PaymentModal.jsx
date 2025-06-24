@@ -36,6 +36,10 @@ const PaymentModal = ({
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [step, setStep] = useState("address");
   const [loading, setLoading] = useState(true);
+  const [deliveryCharges, setDeliveryCharges] = useState({
+    air: 1000,
+    ship: 700,
+  });
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
@@ -68,9 +72,9 @@ const PaymentModal = ({
     const totalWeight = productWeight * qty;
 
     if (shippingMethod === "ship") {
-      shippingPrice = totalWeight * (700 / dollar);
+      shippingPrice = totalWeight * (deliveryCharges.ship / dollar);
     } else if (shippingMethod === "air") {
-      shippingPrice = totalWeight * (1000 / dollar);
+      shippingPrice = totalWeight * (deliveryCharges.air / dollar);
     }
 
     setShippingCost(shippingPrice);
@@ -91,12 +95,31 @@ const PaymentModal = ({
     }
   };
 
+  const fetchDeliveryCharges = async () => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/charge/getcharge`);
+      if (res.data.delcharge && res.data.delcharge.length > 0) {
+        const charges = res.data.delcharge[0];
+        setDeliveryCharges({
+          air: charges.aircharge,
+          ship: charges.shipcharge,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching delivery charges:", error);
+      toast.error("Failed to load shipping rates. Using default values.");
+    }
+  };
+
   useEffect(() => {
     const initializeData = async () => {
       try {
         setLoading(true);
 
-        const rate = await getCurrentDollarinInr();
+        const [rate] = await Promise.all([
+          getCurrentDollarinInr(),
+          fetchDeliveryCharges(),
+        ]);
 
         const userRes = await axios.get(
           `${backendUrl}/api/auth/user/${localStorage.getItem("uid")}`
@@ -158,7 +181,7 @@ const PaymentModal = ({
         );
       }
     }
-  }, [shippingMethod, quantity, dollar, loading]);
+  }, [shippingMethod, quantity, dollar, loading, deliveryCharges]);
 
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";
@@ -244,6 +267,10 @@ const PaymentModal = ({
       </div>
     );
   }
+
+  // Calculate per kg rates for display
+  const airShippingPerKg = deliveryCharges.air / dollar;
+  const shipShippingPerKg = deliveryCharges.ship / dollar;
 
   return (
     <>
@@ -452,7 +479,7 @@ const PaymentModal = ({
                     <div className="text-center">
                       <div className="font-medium text-sm">Air Shipping</div>
                       <div className="text-xs text-gray-500">
-                        ${formatPrice(finalWeight * 11.7)}
+                        ${formatPrice(finalWeight * airShippingPerKg)}
                       </div>
                       <div className="text-xs text-gray-500">5-7 days</div>
                     </div>
@@ -479,7 +506,7 @@ const PaymentModal = ({
                       <div className="text-center">
                         <div className="font-medium text-sm">Sea Shipping</div>
                         <div className="text-xs text-gray-500">
-                          ${formatPrice(finalWeight * 8.19)}
+                          ${formatPrice(finalWeight * shipShippingPerKg)}
                         </div>
                         <div className="text-xs text-gray-500">15-25 days</div>
                       </div>
@@ -765,7 +792,7 @@ const PaymentModal = ({
                           </div>
                           <div className="text-right">
                             <span className="text-sm font-semibold text-gray-900">
-                              ${formatPrice(finalWeight * 11.7)}
+                              ${formatPrice(finalWeight * airShippingPerKg)}
                             </span>
                           </div>
                         </label>
@@ -800,7 +827,7 @@ const PaymentModal = ({
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-semibold text-gray-900">
-                                ${formatPrice(finalWeight * 8.19)}
+                                ${formatPrice(finalWeight * shipShippingPerKg)}
                               </span>
                             </div>
                           </label>
