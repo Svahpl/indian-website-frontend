@@ -43,10 +43,10 @@ const HomePage = () => {
       console.log("User or user.id is not available yet");
       return null;
     }
-
+    const emailId = user.emailAddresses[0].emailAddress;
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/map/clerk/${user.id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/map/clerk/${emailId}`,
         {
           timeout: 10000, // 10 second timeout
         }
