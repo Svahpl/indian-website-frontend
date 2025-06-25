@@ -66,7 +66,7 @@ const PaymentModal = ({
     qty = 1,
     productWeight
   ) => {
-    if (!dollar) return;
+    // if (!dollar) return;
 
     let shippingPrice = 0;
     const totalWeight = productWeight * qty;
@@ -164,7 +164,7 @@ const PaymentModal = ({
   }, [showPaymentModal, product, selectedWeight]);
 
   useEffect(() => {
-    if (!loading && dollar) {
+    if (!loading) {
       const totalWeight = selectedWeight * quantity;
       setFinalWeight(totalWeight);
 
@@ -181,7 +181,7 @@ const PaymentModal = ({
         );
       }
     }
-  }, [shippingMethod, quantity, dollar, loading, deliveryCharges]);
+  }, [shippingMethod, quantity, loading, deliveryCharges]);
 
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";

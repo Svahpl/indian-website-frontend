@@ -56,7 +56,7 @@ const CartPaymentModal = ({
 
   const handleShippingCharges = useCallback(
     (method) => {
-      if (!dollar) return;
+      // if (!dollar) return;
 
       let shippingPrice = 0;
       const { air, ship } = deliveryCharges;
@@ -70,7 +70,7 @@ const CartPaymentModal = ({
       setShippingCost(shippingPrice);
       setFinalPrice(totalPrice + shippingPrice);
     },
-    [totalWeight, totalPrice, dollar, deliveryCharges]
+    [totalWeight, totalPrice, deliveryCharges]
   );
 
   // const getCurrentDollarinInr = useCallback(async () => {
@@ -120,7 +120,6 @@ const CartPaymentModal = ({
 
   // Calculate shipping and final price when dependencies change
   useEffect(() => {
-    if (!dollar) return;
 
     setFinalWeight(totalWeight);
 
@@ -133,7 +132,6 @@ const CartPaymentModal = ({
     totalWeight,
     shippingMethod,
     handleShippingCharges,
-    dollar,
     deliveryCharges,
   ]);
 
