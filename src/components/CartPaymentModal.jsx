@@ -147,7 +147,6 @@ const CartPaymentModal = ({
           `${backendUrl}/api/auth/user/${localStorage.getItem("uid")}`
         );
         setUser(res.data.user);
-
         if (res.data.user.address.length === 0) {
           toast(
             "Please add your address/phone in your profile before making a purchase"
@@ -463,7 +462,7 @@ const CartPaymentModal = ({
                       <div className="text-xs text-gray-500">
                         ₹
                         {formatPrice(
-                          totalWeight * (deliveryCharges.air / dollar)
+                          totalWeight * (deliveryCharges.air)
                         )}
                       </div>
                       <div className="text-xs text-gray-500">5-7 days</div>
@@ -491,7 +490,7 @@ const CartPaymentModal = ({
                         <div className="text-xs text-gray-500">
                           ₹
                           {formatPrice(
-                            totalWeight * (deliveryCharges.ship / dollar)
+                            totalWeight * (deliveryCharges.ship)
                           )}
                         </div>
                         <div className="text-xs text-gray-500">15-25 days</div>
@@ -785,7 +784,7 @@ const CartPaymentModal = ({
                             <span className="text-sm font-semibold text-gray-900">
                               ₹
                               {formatPrice(
-                                totalWeight * (deliveryCharges.air / dollar)
+                                totalWeight * (deliveryCharges.air)
                               )}
                             </span>
                           </div>
@@ -821,7 +820,7 @@ const CartPaymentModal = ({
                               <span className="text-sm font-semibold text-gray-900">
                                 ₹
                                 {formatPrice(
-                                  totalWeight * (deliveryCharges.ship / dollar)
+                                  totalWeight * (deliveryCharges.ship)
                                 )}
                               </span>
                             </div>

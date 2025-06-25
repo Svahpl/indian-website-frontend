@@ -269,8 +269,8 @@ const PaymentModal = ({
   }
 
   // Calculate per kg rates for display
-  const airShippingPerKg = deliveryCharges.air / dollar;
-  const shipShippingPerKg = deliveryCharges.ship / dollar;
+  const airShippingPerKg = deliveryCharges.air;
+  const shipShippingPerKg = deliveryCharges.ship;
 
   return (
     <>
