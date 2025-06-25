@@ -489,7 +489,7 @@ const CartPaymentModal = ({
                       <div className="text-center">
                         <div className="font-medium text-sm">Sea Shipping</div>
                         <div className="text-xs text-gray-500">
-                          $
+                          ₹
                           {formatPrice(
                             totalWeight * (deliveryCharges.ship / dollar)
                           )}
@@ -732,10 +732,10 @@ const CartPaymentModal = ({
                           </div>
                           <div className="text-right">
                             <p className="text-xl font-bold text-gray-900">
-                              ${formatPrice(item.price)}/kg
+                              ₹{formatPrice(item.price)}/kg
                             </p>
                             <p className="text-sm text-gray-500">
-                              $
+                              ₹
                               {formatPrice(
                                 item.price * item.weight * item.quantity
                               )}
@@ -783,7 +783,7 @@ const CartPaymentModal = ({
                           </div>
                           <div className="text-right">
                             <span className="text-sm font-semibold text-gray-900">
-                              $
+                              ₹
                               {formatPrice(
                                 totalWeight * (deliveryCharges.air / dollar)
                               )}
@@ -819,7 +819,7 @@ const CartPaymentModal = ({
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-semibold text-gray-900">
-                                $
+                                ₹
                                 {formatPrice(
                                   totalWeight * (deliveryCharges.ship / dollar)
                                 )}
@@ -841,7 +841,7 @@ const CartPaymentModal = ({
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Product Price</span>
                         <span className="text-gray-900">
-                          ${formatPrice(totalPrice)}
+                          ₹{formatPrice(totalPrice)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
@@ -849,17 +849,17 @@ const CartPaymentModal = ({
                           Shipping ({shippingMethod === "air" ? "Air" : "Sea"})
                         </span>
                         <span className="text-gray-900">
-                          ${formatPrice(shippingCost)}
+                          ₹{formatPrice(shippingCost)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Tax</span>
-                        <span className="text-gray-900">$0.00</span>
+                        <span className="text-gray-900">₹0.00</span>
                       </div>
                       <div className="flex justify-between text-xl font-bold pt-3 border-t border-gray-200">
                         <span>Total</span>
                         <span className="text-green-700">
-                          ${formatPrice(finalPrice)}
+                          ₹{formatPrice(finalPrice)}
                         </span>
                       </div>
                     </div>
