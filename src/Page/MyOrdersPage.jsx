@@ -742,13 +742,13 @@ Thank you for shopping with Natural Store!
                               </p>
                               <div className="flex flex-wrap gap-2 mt-1.5 text-xs md:text-sm">
                                 <span className="text-green-600 font-semibold">
-                                  ${item.price?.toFixed(2)}
+                                  ₹{item.price?.toFixed(2)}
                                 </span>
                                 <span className="text-gray-500">
                                   Qty: {item.quantity}
                                 </span>
                                 <span className="text-gray-800 font-semibold">
-                                  Total: $
+                                  Total: ₹
                                   {(item.price * item.quantity).toFixed(2)}
                                 </span>
                               </div>
@@ -779,7 +779,7 @@ Thank you for shopping with Natural Store!
                           Total Amount:
                         </span>
                         <span className="text-lg md:text-2xl font-bold text-green-600">
-                          ${order.totalAmount.toFixed(2)}
+                          ₹{order.totalAmount.toFixed(2)}
                         </span>
                       </div>
                     </div>

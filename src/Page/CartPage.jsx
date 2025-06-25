@@ -73,6 +73,10 @@ const CartPage = () => {
       const res2 = await deleteCartItem(productId, 0, "delete", null);
       if (res.status === 200 && res2 === 200) toast("Added to wishlist!");
     } catch (error) {
+      if (error.status === 409) {
+        toast(`Already Added in wishlist`);
+        return;
+      }
       console.log("Error adding item to wishlist", error);
       toast("Internal Error");
     }
@@ -187,7 +191,7 @@ const CartPage = () => {
                 </h5>
               </div>
               <div>
-                <span className="font-bold text-lg">${subtotalPrice}</span>
+                <span className="font-bold text-lg">₹{subtotalPrice}</span>
               </div>
             </div>
 
@@ -249,7 +253,7 @@ const CartPage = () => {
               <div className="mb-4">
                 <h3 className="text-lg font-normal mb-2">
                   Subtotal ({subtotalItems} items) :{" "}
-                  <span className="font-bold">${subtotalPrice}</span>
+                  <span className="font-bold">₹{subtotalPrice}</span>
                 </h3>
               </div>
 

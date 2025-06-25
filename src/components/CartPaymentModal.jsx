@@ -62,9 +62,9 @@ const CartPaymentModal = ({
       const { air, ship } = deliveryCharges;
 
       if (method === "ship") {
-        shippingPrice = totalWeight * (ship / dollar);
+        shippingPrice = totalWeight * ship;
       } else if (method === "air") {
-        shippingPrice = totalWeight * (air / dollar);
+        shippingPrice = totalWeight * air;
       }
 
       setShippingCost(shippingPrice);
@@ -73,17 +73,17 @@ const CartPaymentModal = ({
     [totalWeight, totalPrice, dollar, deliveryCharges]
   );
 
-  const getCurrentDollarinInr = useCallback(async () => {
-    try {
-      const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
-      const inr = res.data.rates.INR;
-      setDollar(inr);
-      console.log("Current dollar rate in INR:", inr);
-    } catch (error) {
-      console.error(`Error fetching current dollar price in INR: ${error}`);
-      setDollar(83.5);
-    }
-  }, []);
+  // const getCurrentDollarinInr = useCallback(async () => {
+  //   try {
+  //     const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
+  //     const inr = res.data.rates.INR;
+  //     setDollar(inr);
+  //     console.log("Current dollar rate in INR:", inr);
+  //   } catch (error) {
+  //     console.error(`Error fetching current dollar price in INR: ${error}`);
+  //     setDollar(83.5);
+  //   }
+  // }, []);
 
   // Fetch delivery charges from API
   const fetchDeliveryCharges = useCallback(async () => {
@@ -105,24 +105,20 @@ const CartPaymentModal = ({
 
   const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
-    getCurrentDollarinInr().finally(() => {
-      setReloadPaypal((prev) => !prev);
-      setIsRefreshing(false);
-    });
-  }, [getCurrentDollarinInr]);
+  }, []);
 
   // Initialize with dollar rate and delivery charges
   useEffect(() => {
     if (showPaymentModal) {
       setIsInitializing(true);
 
-      Promise.all([getCurrentDollarinInr(), fetchDeliveryCharges()]).finally(
+      Promise.all([ fetchDeliveryCharges()]).finally(
         () => {
           setIsInitializing(false);
         }
       );
     }
-  }, [showPaymentModal, getCurrentDollarinInr, fetchDeliveryCharges]);
+  }, [showPaymentModal, fetchDeliveryCharges]);
 
   // Calculate shipping and final price when dependencies change
   useEffect(() => {

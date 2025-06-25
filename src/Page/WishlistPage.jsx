@@ -45,7 +45,7 @@ const WishlistProduct = ({ product, onDelete, onAddToCart }) => {
           {/* Price */}
           <div className="mb-3">
             <span className="text-xl font-bold text-gray-900">
-              <sup>$</sup>
+              <sup>₹</sup>
               {product.price || "0.00"}
             </span>
           </div>
@@ -58,7 +58,7 @@ const WishlistProduct = ({ product, onDelete, onAddToCart }) => {
               }`}
             >
               {isInStock
-                ? `In Stock (${product.quantity} available)`
+                ? `In Stock`
                 : "Out of Stock"}
             </span>
           </div>

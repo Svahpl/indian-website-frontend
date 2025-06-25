@@ -73,7 +73,7 @@ const CartProduct = ({
               {/* Pricing */}
               <div className="ml-4 text-xl mt-3">
                 <h5 className="text-gray-900">
-                  <sup className="text-sm">$</sup>
+                  <sup className="text-sm">₹</sup>
                   <span className="font-bold">
                     {product.price.toLocaleString()}
                   </span>

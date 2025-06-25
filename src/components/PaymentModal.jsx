@@ -72,28 +72,28 @@ const PaymentModal = ({
     const totalWeight = productWeight * qty;
 
     if (shippingMethod === "ship") {
-      shippingPrice = totalWeight * (deliveryCharges.ship / dollar);
+      shippingPrice = totalWeight * (deliveryCharges.ship);
     } else if (shippingMethod === "air") {
-      shippingPrice = totalWeight * (deliveryCharges.air / dollar);
+      shippingPrice = totalWeight * (deliveryCharges.air);
     }
 
     setShippingCost(shippingPrice);
     setFinalPrice(selectedWeight * product.price * quantity + shippingPrice);
   };
 
-  const getCurrentDollarinInr = async () => {
-    try {
-      const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
-      const inr = res.data.rates.INR;
-      setDollar(inr);
-      return inr;
-    } catch (error) {
-      console.log(`Error fetching current dollar price in inr: ${error}`);
-      const fallbackRate = 85.567517;
-      setDollar(fallbackRate);
-      return fallbackRate;
-    }
-  };
+  // const getCurrentDollarinInr = async () => {
+  //   try {
+  //     const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
+  //     const inr = res.data.rates.INR;
+  //     setDollar(inr);
+  //     return inr;
+  //   } catch (error) {
+  //     console.log(`Error fetching current dollar price in inr: ${error}`);
+  //     const fallbackRate = 85.567517;
+  //     setDollar(fallbackRate);
+  //     return fallbackRate;
+  //   }
+  // };
 
   const fetchDeliveryCharges = async () => {
     try {
@@ -117,7 +117,7 @@ const PaymentModal = ({
         setLoading(true);
 
         const [rate] = await Promise.all([
-          getCurrentDollarinInr(),
+          // getCurrentDollarinInr(),
           fetchDeliveryCharges(),
         ]);
 
@@ -389,7 +389,7 @@ const PaymentModal = ({
                       Weight: {selectedWeight}kg × {quantity} = {finalWeight}kg
                     </p>
                     <p className="text-lg font-bold text-gray-900">
-                      ${formatPrice(product.price)}/kg
+                      ₹{formatPrice(product.price)}/kg
                     </p>
                   </div>
                 </div>
@@ -425,7 +425,7 @@ const PaymentModal = ({
                 <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">
-                      Product Price (${formatPrice(product.price)}/kg ×{" "}
+                      Product Price (₹{formatPrice(product.price)}/kg ×{" "}
                       {selectedWeight}kg × {quantity})
                     </span>
                     <span className="text-gray-900">
@@ -443,7 +443,7 @@ const PaymentModal = ({
                   <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                     <span>Total</span>
                     <span className="text-green-800">
-                      ${formatPrice(finalPrice)}
+                      ₹{formatPrice(finalPrice)}
                     </span>
                   </div>
                 </div>
@@ -479,7 +479,7 @@ const PaymentModal = ({
                     <div className="text-center">
                       <div className="font-medium text-sm">Air Shipping</div>
                       <div className="text-xs text-gray-500">
-                        ${formatPrice(finalWeight * airShippingPerKg)}
+                        ₹{formatPrice(finalWeight * airShippingPerKg)}
                       </div>
                       <div className="text-xs text-gray-500">5-7 days</div>
                     </div>
@@ -506,7 +506,7 @@ const PaymentModal = ({
                       <div className="text-center">
                         <div className="font-medium text-sm">Sea Shipping</div>
                         <div className="text-xs text-gray-500">
-                          ${formatPrice(finalWeight * shipShippingPerKg)}
+                          ₹{formatPrice(finalWeight * shipShippingPerKg)}
                         </div>
                         <div className="text-xs text-gray-500">15-25 days</div>
                       </div>
@@ -719,7 +719,7 @@ const PaymentModal = ({
                       </div>
                       <div className="text-right">
                         <p className="text-xl font-bold text-gray-900">
-                          ${formatPrice(product.price)}/kg
+                          ₹{formatPrice(product.price)}/kg
                         </p>
                       </div>
                     </div>
@@ -792,7 +792,7 @@ const PaymentModal = ({
                           </div>
                           <div className="text-right">
                             <span className="text-sm font-semibold text-gray-900">
-                              ${formatPrice(finalWeight * airShippingPerKg)}
+                              ₹{formatPrice(finalWeight * airShippingPerKg)}
                             </span>
                           </div>
                         </label>
@@ -827,7 +827,7 @@ const PaymentModal = ({
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-semibold text-gray-900">
-                                ${formatPrice(finalWeight * shipShippingPerKg)}
+                                ₹{formatPrice(finalWeight * shipShippingPerKg)}
                               </span>
                             </div>
                           </label>
@@ -845,11 +845,11 @@ const PaymentModal = ({
                     <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">
-                          Product Price (${formatPrice(product.price)}/kg ×{" "}
+                          Product Price (₹{formatPrice(product.price)}/kg ×{" "}
                           {selectedWeight}kg × {quantity})
                         </span>
                         <span className="text-gray-900">
-                          ${formatPrice(productTotalPrice)}
+                          ₹{formatPrice(productTotalPrice)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
@@ -857,17 +857,17 @@ const PaymentModal = ({
                           Shipping ({shippingMethod === "air" ? "Air" : "Sea"})
                         </span>
                         <span className="text-gray-900">
-                          ${formatPrice(shippingCost)}
+                          ₹{formatPrice(shippingCost)}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-600">Tax</span>
-                        <span className="text-gray-900">$0.00</span>
+                        <span className="text-gray-900">₹0.00</span>
                       </div>
                       <div className="flex justify-between text-xl font-bold pt-3 border-t border-gray-200">
                         <span>Total</span>
                         <span className="text-green-800">
-                          ${formatPrice(finalPrice)}
+                          ₹{formatPrice(finalPrice)}
                         </span>
                       </div>
                     </div>
