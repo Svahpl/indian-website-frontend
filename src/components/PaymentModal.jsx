@@ -429,7 +429,7 @@ const PaymentModal = ({
                       {selectedWeight}kg × {quantity})
                     </span>
                     <span className="text-gray-900">
-                      ${formatPrice(productTotalPrice)}
+                      ₹{formatPrice(productTotalPrice)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -437,7 +437,7 @@ const PaymentModal = ({
                       Shipping ({shippingMethod === "air" ? "Air" : "Ship"})
                     </span>
                     <span className="text-gray-900">
-                      ${formatPrice(shippingCost)}
+                      ₹{formatPrice(shippingCost)}
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
