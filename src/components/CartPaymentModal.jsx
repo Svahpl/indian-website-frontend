@@ -112,11 +112,9 @@ const CartPaymentModal = ({
     if (showPaymentModal) {
       setIsInitializing(true);
 
-      Promise.all([ fetchDeliveryCharges()]).finally(
-        () => {
-          setIsInitializing(false);
-        }
-      );
+      Promise.all([fetchDeliveryCharges()]).finally(() => {
+        setIsInitializing(false);
+      });
     }
   }, [showPaymentModal, fetchDeliveryCharges]);
 
@@ -378,7 +376,7 @@ const CartPaymentModal = ({
                         {item.weight * item.quantity}kg
                       </p>
                       <p className="text-lg font-bold text-gray-900">
-                        ${formatPrice(item.price)}/kg
+                        ₹{formatPrice(item.price)}/kg
                       </p>
 
                       <div className="mt-2 flex items-center justify-between">
@@ -416,7 +414,7 @@ const CartPaymentModal = ({
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Product Price</span>
                     <span className="text-gray-900">
-                      ${formatPrice(totalPrice)}
+                      ₹{formatPrice(totalPrice)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -424,13 +422,13 @@ const CartPaymentModal = ({
                       Shipping ({shippingMethod === "air" ? "Air" : "Ship"})
                     </span>
                     <span className="text-gray-900">
-                      ${formatPrice(shippingCost)}
+                      ₹{formatPrice(shippingCost)}
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-200">
                     <span>Total</span>
                     <span className="text-green-700">
-                      ${formatPrice(finalPrice)}
+                      ₹{formatPrice(finalPrice)}
                     </span>
                   </div>
                 </div>
@@ -463,7 +461,7 @@ const CartPaymentModal = ({
                     <div className="text-center">
                       <div className="font-medium text-sm">Air Shipping</div>
                       <div className="text-xs text-gray-500">
-                        $
+                        ₹
                         {formatPrice(
                           totalWeight * (deliveryCharges.air / dollar)
                         )}
