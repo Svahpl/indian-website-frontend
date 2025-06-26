@@ -49,6 +49,7 @@ const PaypalPayment = ({
             weight: userSelectedWeight,
           },
         ],
+        totalAmount,
         paymentStatus: "Pending", // Set initial status
       });
       console.log("Order Creation Response", res);

@@ -63,6 +63,8 @@ const RazorpayCartPayment = ({
         weight: item.weight,
       }));
 
+      const totalAmount = productPrice.toFixed(1);
+
       const res = await axios.post(`${backendUrl}/api/order/cart-india-order`, {
         user: uid,
         phoneNumber: num,
@@ -71,6 +73,7 @@ const RazorpayCartPayment = ({
         razorpayOrderId: rzpOrderId,
         rzpId: rzpOrderId, // Add this field for verification lookup
         items: formattedItems,
+        totalAmount: totalAmount,
         paymentStatus: "Pending", // Set initial status
       });
 
