@@ -776,7 +776,7 @@ Thank you for shopping with Natural Store!
                     <div className="border-t border-gray-200 pt-3">
                       <div className="flex justify-between items-center">
                         <span className="text-base md:text-xl font-bold text-gray-800">
-                          Total Amount (Including Shipping):
+                          Total Amount:
                         </span>
                         <span className="text-lg md:text-2xl font-bold text-green-600">
                           ₹{order.totalAmount.toFixed(2)}

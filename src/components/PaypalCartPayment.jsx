@@ -24,7 +24,7 @@ const RazorpayCartPayment = ({
   const [isLoading, setIsLoading] = useState(false);
 
   console.log("---- TOTAL ITEMS ARRAY ---", totalItemsArray);
-  console.log("---- PRODUCT PRICE ---", productPrice);
+  console.log("---- FINAL PRODUCT PRICE ---", productPrice);
   console.log("---- SHIPPING MODE ---", sha);
   console.log("---- PRODUCT PRICE ---", products[0]?.price);
   console.log("--- QUANTITY---", quantity);
@@ -64,6 +64,7 @@ const RazorpayCartPayment = ({
       }));
 
       const totalAmount = productPrice.toFixed(1);
+      console.log("total Amount",totalAmount);
 
       const res = await axios.post(`${backendUrl}/api/order/cart-india-order`, {
         user: uid,
