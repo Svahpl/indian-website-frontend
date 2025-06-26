@@ -13,7 +13,6 @@ const PaypalPayment = ({
   products,
   userSelectedWeight,
   totalWeight,
-  totalAmount,
   quantity = 1,
 }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -49,7 +48,7 @@ const PaypalPayment = ({
             weight: userSelectedWeight,
           },
         ],
-        totalAmount,
+        totalAmount: productPrice.toFixed(1),
         paymentStatus: "Pending", // Set initial status
       });
       console.log("Order Creation Response", res);
