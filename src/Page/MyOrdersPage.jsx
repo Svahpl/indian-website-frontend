@@ -19,6 +19,7 @@ import {
   X,
   Headset,
   Star,
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -51,6 +52,10 @@ const MyOrdersPage = () => {
   const [hoverRating, setHoverRating] = useState(0);
   const [ratingLoading, setRatingLoading] = useState(false);
   const [ratingError, setRatingError] = useState("");
+
+  // Order details modal state
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -377,6 +382,115 @@ Thank you for shopping with Natural Store!
     });
   };
 
+  const openOrderDetailsModal = (order) => {
+    setSelectedOrder(order);
+    setShowOrderModal(true);
+  };
+
+  const closeOrderDetailsModal = () => {
+    setShowOrderModal(false);
+    setSelectedOrder(null);
+  };
+
+  const getOrderTimeline = (order) => {
+    const timeline = [];
+
+    // Always show order placed
+    timeline.push({
+      status: "Order Placed",
+      date: order.placedAt,
+      icon: <Package className="w-5 h-5" />,
+      active: true,
+      completed: true,
+    });
+
+    // Payment status
+    if (order.paymentStatus.toLowerCase() === "success") {
+      timeline.push({
+        status: "Payment Successful",
+        date: order.placedAt, // Assuming payment happens at order time
+        icon: <CreditCard className="w-5 h-5" />,
+        active: true,
+        completed: true,
+      });
+    } else if (order.paymentStatus.toLowerCase() === "failed") {
+      timeline.push({
+        status: "Payment Failed",
+        date: order.placedAt,
+        icon: <XCircle className="w-5 h-5" />,
+        active: false,
+        completed: false,
+      });
+    }
+
+    // Order processing
+    if (
+      order.orderStatus.toLowerCase() === "processing" ||
+      order.orderStatus.toLowerCase() === "confirmed" ||
+      order.orderStatus.toLowerCase() === "shipped" ||
+      order.orderStatus.toLowerCase() === "delivered"
+    ) {
+      timeline.push({
+        status: "Order Confirmed",
+        date: order.placedAt, // Assuming confirmation happens at order time
+        icon: <CheckCircle className="w-5 h-5" />,
+        active: order.orderStatus.toLowerCase() !== "pending",
+        completed: order.orderStatus.toLowerCase() !== "pending",
+      });
+    }
+
+    // Processing
+    if (order.orderStatus.toLowerCase() === "processing") {
+      timeline.push({
+        status: "Processing",
+        date: order.placedAt, // This would ideally come from backend
+        icon: <Package className="w-5 h-5" />,
+        active: true,
+        completed: false,
+      });
+    }
+
+    // Shipped
+    if (
+      order.orderStatus.toLowerCase() === "shipped" ||
+      order.orderStatus.toLowerCase() === "delivered"
+    ) {
+      timeline.push({
+        status: "Shipped",
+        date: order.shippedAt || order.placedAt, // Ideally from backend
+        icon: <Truck className="w-5 h-5" />,
+        active: true,
+        completed:
+          order.orderStatus.toLowerCase() === "shipped" ||
+          order.orderStatus.toLowerCase() === "delivered",
+      });
+    }
+
+    // Delivered
+    if (order.orderStatus.toLowerCase() === "delivered") {
+      timeline.push({
+        status: "Delivered",
+        date: order.deliveredAt || order.placedAt, // Ideally from backend
+        icon: <CheckCircle className="w-5 h-5" />,
+        active: true,
+        completed: true,
+      });
+    }
+
+    // Cancelled
+    if (order.orderStatus.toLowerCase() === "cancelled") {
+      timeline.push({
+        status: "Cancelled",
+        date: order.cancelledAt || order.placedAt, // Ideally from backend
+        icon: <XCircle className="w-5 h-5" />,
+        active: false,
+        completed: false,
+      });
+    }
+
+    return timeline;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
@@ -562,7 +676,8 @@ Thank you for shopping with Natural Store!
               {filteredOrders.map((order) => (
                 <div
                   key={order._id}
-                  className="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+                  className="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden cursor-pointer"
+                  onClick={() => openOrderDetailsModal(order)}
                 >
                   {/* Order Header - Responsive Stack */}
                   <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4 md:p-6">
@@ -594,11 +709,12 @@ Thank you for shopping with Natural Store!
                         <div className="flex flex-wrap gap-2">
                           {order.orderStatus.toLowerCase() !== "cancelled" ? (
                             <button
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 navigate(
                                   `/my-account/orders/view-invoice/${order._id}`
-                                )
-                              }
+                                );
+                              }}
                               className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 transition-colors"
                             >
                               <ExternalLink className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -609,6 +725,7 @@ Thank you for shopping with Natural Store!
                               disabled
                               className="bg-gray-300 text-gray-500 px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 cursor-not-allowed"
                               title="Cannot view invoice for cancelled orders"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               <span>Unavailable</span>
@@ -620,7 +737,10 @@ Thank you for shopping with Natural Store!
                             order.paymentStatus
                           ) ? (
                             <button
-                              onClick={() => openCancelModal(order._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openCancelModal(order._id);
+                              }}
                               className="bg-red-500/20 hover:bg-red-500/30 text-white px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 transition-colors"
                             >
                               <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -637,6 +757,7 @@ Thank you for shopping with Natural Store!
                                     ? "Only successful payments can be cancelled"
                                     : "This order cannot be cancelled"
                                 }
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 <span>Unavailable</span>
@@ -645,7 +766,10 @@ Thank you for shopping with Natural Store!
                           )}
                         </div>
                         <div
-                          onClick={() => navigate("/Contact")}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate("/Contact");
+                          }}
                           className={`cursor-pointer px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 bg-white/20 text-white`}
                         >
                           <Headset className="w-3.5 h-3.5 md:w-4 md:h-4" />{" "}
@@ -758,7 +882,10 @@ Thank you for shopping with Natural Store!
                                 "delivered" && (
                                 <div className="mt-2 flex justify-end">
                                   <button
-                                    onClick={() => openRatingModal(item)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openRatingModal(item);
+                                    }}
                                     className="text-xs md:text-sm bg-amber-500 text-white px-2 py-1 rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-1"
                                   >
                                     <Star className="w-3 h-3" />
@@ -776,8 +903,8 @@ Thank you for shopping with Natural Store!
                     <div className="border-t border-gray-200 pt-3">
                       <div className="flex justify-between items-center">
                         <span className="text-base md:text-xl font-bold text-gray-800">
-                          Total Amount:
-                        </span>
+                          Total Amount (With Shipping):
+                        </span>{" "}
                         <span className="text-lg md:text-2xl font-bold text-green-600">
                           ₹{order.totalAmount.toFixed(2)}
                         </span>
@@ -789,6 +916,249 @@ Thank you for shopping with Natural Store!
             </div>
           )}
         </div>
+
+        {/* Order Details Modal */}
+        {showOrderModal && selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="p-5 md:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                    Order Details
+                  </h2>
+                  <button
+                    onClick={closeOrderDetailsModal}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Order Timeline */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Order Status Timeline
+                  </h3>
+                  <div className="relative">
+                    {/* Vertical line */}
+                    <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+                    {getOrderTimeline(selectedOrder).map((step, index) => (
+                      <div key={index} className="relative pl-10 pb-4">
+                        <div
+                          className={`absolute left-5 top-0 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full ${
+                            step.completed
+                              ? "bg-green-500"
+                              : step.active
+                              ? "bg-blue-500"
+                              : "bg-gray-300"
+                          }`}
+                        ></div>
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`p-2 rounded-full ${
+                              step.completed
+                                ? "bg-green-100 text-green-600"
+                                : step.active
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {step.icon}
+                          </div>
+                          <div>
+                            <h4
+                              className={`text-sm font-medium ${
+                                step.completed
+                                  ? "text-green-700"
+                                  : step.active
+                                  ? "text-blue-700"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              {step.status}
+                            </h4>
+                            <p className="text-xs text-gray-500">
+                              {formatDate(step.date)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Order Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  {/* Customer Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      Customer Information
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">
+                          {selectedOrder.userName}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">
+                          {selectedOrder.phoneNumber}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4 text-gray-500" />
+                        <span
+                          className={`text-sm font-medium ${getPaymentStatusColor(
+                            selectedOrder.paymentStatus
+                          )}`}
+                        >
+                          Payment: {selectedOrder.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Shipping Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                      Shipping Information
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-gray-500 mt-0.5" />
+                        <span className="text-sm text-gray-700">
+                          {selectedOrder.shippingAddress}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">
+                          Expected Delivery:{" "}
+                          {selectedOrder.expectedDelivery
+                            ? formatDate(selectedOrder.expectedDelivery)
+                            : "To be determined"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Order Items ({selectedOrder.items.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedOrder.items.map((item) => (
+                      <div
+                        key={item._id}
+                        className="flex flex-col sm:flex-row items-start gap-4 p-3 bg-white border border-gray-100 rounded-lg shadow-sm"
+                      >
+                        <img
+                          src={item.images[0]}
+                          alt={item.title}
+                          className="w-full sm:w-20 h-20 object-cover rounded-lg"
+                        />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-gray-800">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-gray-500 mb-2">
+                            Weight: {item.weight}kg
+                          </p>
+                          <div className="flex flex-wrap gap-3 text-sm">
+                            <span className="text-green-600 font-semibold">
+                              ₹{item.price?.toFixed(2)}
+                            </span>
+                            <span className="text-gray-500">
+                              Qty: {item.quantity}
+                            </span>
+                            <span className="text-gray-800 font-semibold">
+                              Total: ₹{(item.price * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                        {selectedOrder.orderStatus.toLowerCase() ===
+                          "delivered" && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openRatingModal(item);
+                            }}
+                            className="text-xs md:text-sm bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-1.5"
+                          >
+                            <Star className="w-3.5 h-3.5" />
+                            Rate
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Order Total */}
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-gray-800">
+                      Order Total:
+                    </span>
+                    <span className="text-xl font-bold text-green-600">
+                      ₹{selectedOrder.totalAmount.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Order Actions */}
+                <div className="mt-6 flex flex-wrap gap-3">
+                  {selectedOrder.orderStatus.toLowerCase() !== "cancelled" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(
+                          `/my-account/orders/view-invoice/${selectedOrder._id}`
+                        );
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Invoice</span>
+                    </button>
+                  )}
+
+                  {canCancelOrder(
+                    selectedOrder.orderStatus,
+                    selectedOrder.paymentStatus
+                  ) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCancelModal(selectedOrder._id);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>Cancel Order</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/Contact");
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    <Headset className="w-4 h-4" />
+                    <span>Contact Support</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Cancel Order Modal - Responsive */}
         {showCancelModal && (

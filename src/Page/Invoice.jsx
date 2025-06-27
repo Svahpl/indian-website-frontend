@@ -17,11 +17,9 @@ const Invoice = () => {
   UseTitle(`Invoice | ${orderId?.slice(0, 10).toUpperCase()}`);
 
   useEffect(() => {
-    // Extract UID from URL parameters if present
     const queryParams = new URLSearchParams(window.location.search);
     const urlUid = queryParams.get("uid");
 
-    // Store UID from URL if it doesn't exist in localStorage
     if (urlUid && !localStorage.getItem("uid")) {
       localStorage.setItem("uid", urlUid);
     }
@@ -31,9 +29,7 @@ const Invoice = () => {
         setLoading(true);
         const uid = localStorage.getItem("uid");
 
-        // Handle missing UID gracefully
         if (!uid) {
-          // First-time load might have UID in URL but not processed yet
           setTimeout(fetchOrderData, 300);
           return;
         }
@@ -140,13 +136,21 @@ const Invoice = () => {
     );
   }
 
-  const invoiceNumber = `INV-${invoiceData._id.slice(-8).toUpperCase()}`;
-  const subtotal = invoiceData.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+  // Calculate item amounts and totals
+  const itemsWithTotal = invoiceData.items.map((item) => ({
+    ...item,
+    totalPrice: item.price * item.quantity * (item.weight || 1),
+  }));
+
+  const subtotal = itemsWithTotal.reduce(
+    (sum, item) => sum + item.totalPrice,
     0
   );
-  const shipping = 15;
-  const total = subtotal + shipping;
+
+  const shipping = invoiceData.totalAmount - subtotal;
+  const total = invoiceData.totalAmount;
+
+  const invoiceNumber = `INV-${invoiceData._id.slice(-8).toUpperCase()}`;
   const invoiceDate = new Date(invoiceData.placedAt).toLocaleDateString(
     "en-US",
     {
@@ -246,10 +250,15 @@ const Invoice = () => {
           margin: 1.5rem 0;
         }
 
+        /* FIXED COLUMN WIDTHS */
         .description-column {
-          width: 50%;
+          width: 40%;
         }
         .quantity-column {
+          width: 10%;
+          text-align: center;
+        }
+        .weight-column {
           width: 15%;
           text-align: center;
         }
@@ -274,10 +283,8 @@ const Invoice = () => {
       >
         <div className="max-w-4xl mx-auto print-container">
           <div className="p-8 print:p-0 avoid-break invoice-container">
-            {/* Top Header - QR code removed */}
             <div className="header-border avoid-break">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                {/* Center - Invoice Title and Details */}
                 <div className="text-center md:text-left">
                   <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-wide">
                     INVOICE
@@ -293,7 +300,6 @@ const Invoice = () => {
                   </div>
                 </div>
 
-                {/* Right - Company Info */}
                 <div className="text-center md:text-right">
                   <div className="mb-3 flex justify-center md:justify-end">
                     <img src={logo} alt="Company Logo" className="w-12" />
@@ -314,7 +320,6 @@ const Invoice = () => {
               </div>
             </div>
 
-            {/* Billing Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 avoid-break">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3 border-b-2 border-gray-900 pb-2">
@@ -349,7 +354,6 @@ const Invoice = () => {
               </div>
             </div>
 
-            {/* Items Table */}
             <div className="mb-8 avoid-break table-container">
               <table className="invoice-table">
                 <thead>
@@ -360,6 +364,9 @@ const Invoice = () => {
                     <th className="text-center text-xs md:text-sm quantity-column">
                       QTY
                     </th>
+                    <th className="text-center text-xs md:text-sm weight-column">
+                      WEIGHT (kg)
+                    </th>
                     <th className="text-right text-xs md:text-sm price-column">
                       UNIT PRICE
                     </th>
@@ -369,10 +376,10 @@ const Invoice = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoiceData.items && invoiceData.items.length > 0 ? (
-                    invoiceData.items.map((item, index) => (
+                  {itemsWithTotal.length > 0 ? (
+                    itemsWithTotal.map((item, index) => (
                       <React.Fragment key={item._id || index}>
-                        {index > 0 && index % 10 === 0 && (
+                        {index > 0 && index % 8 === 0 && (
                           <tr className="page-break"></tr>
                         )}
 
@@ -381,20 +388,18 @@ const Invoice = () => {
                             <div className="font-semibold text-gray-900">
                               {item.title}
                             </div>
-                            {item.weight && (
-                              <div className="text-xs text-gray-500 mt-1">
-                                Weight: {item.weight}kg
-                              </div>
-                            )}
                           </td>
                           <td className="text-center text-gray-700 font-medium text-xs md:text-sm quantity-column">
                             {item.quantity}
                           </td>
+                          <td className="text-center text-gray-700 font-medium text-xs md:text-sm weight-column">
+                            {item.weight || 1}
+                          </td>
                           <td className="text-right text-gray-700 text-xs md:text-sm price-column">
-                            ${item.price.toFixed(2)}
+                            ₹{item.price.toFixed(2)}
                           </td>
                           <td className="text-right font-bold text-gray-900 text-xs md:text-sm amount-column">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ₹{item.totalPrice.toFixed(2)}
                           </td>
                         </tr>
                       </React.Fragment>
@@ -402,7 +407,7 @@ const Invoice = () => {
                   ) : (
                     <tr>
                       <td
-                        colSpan="4"
+                        colSpan="5"
                         className="py-8 px-4 text-center text-gray-500"
                       >
                         No items found
@@ -413,33 +418,31 @@ const Invoice = () => {
               </table>
             </div>
 
-            {/* Totals Section */}
             <div className="flex justify-end mb-8 avoid-break">
               <div className="w-full md:w-80">
                 <div className="space-y-2 total-section">
                   <div className="flex justify-between py-2 text-gray-700 text-sm md:text-base">
                     <span className="font-medium">Subtotal:</span>
                     <span className="font-semibold">
-                      ${subtotal.toFixed(2)}
+                      ₹{subtotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between py-2 text-gray-700 text-sm md:text-base">
                     <span className="font-medium">Shipping:</span>
                     <span className="font-semibold">
-                      ${shipping.toFixed(2)}
+                      ₹{shipping.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t-2 border-gray-900 pt-3 mt-3">
                     <div className="flex justify-between py-2 text-lg md:text-xl font-bold text-gray-900">
                       <span>TOTAL:</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>₹{total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Section */}
             <div className="section-divider"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs md:text-sm avoid-break">
               <div>
@@ -462,7 +465,6 @@ const Invoice = () => {
               </div>
             </div>
 
-            {/* Download Button */}
             <div
               data-html2canvas-ignore
               className="flex justify-center mt-8 no-print"
