@@ -1,127 +1,89 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import Select from 'react-select';
 import { Mail } from 'lucide-react';
-import { countries } from '../data/countries';
 
 const ContactSection = () => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formType, setFormType] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
     clearErrors,
   } = useForm();
 
-  const resetForm = () => {
-    reset();
-    setSelectedCountry(null);
-    clearErrors();
-  };
-
-  const handleButtonClick = (type) => {
-    if (formType === type) {
-      setIsFormVisible(!isFormVisible);
-    } else {
-      setFormType(type);
-      setIsFormVisible(true);
-      setIsSubmitted(false);
+  const toggleForm = () => {
+    setIsFormOpen(!isFormOpen);
+    if (!isFormOpen) {
       resetForm();
     }
   };
 
- const handleCountryChange = (option) => {
-  setSelectedCountry(option);
-  setValue('country', option?.value || '');
-  if (option) {
-    clearErrors('country');
-  } 
-};
+  const resetForm = () => {
+    reset();
+    clearErrors();
+    setIsSubmitted(false);
+  };
 
-const onSubmit = async (formData) => {
-  setIsLoading(true);
-  try {
-    console.log('Form Submission Started:', {
-      formType,
-      formData,
-      selectedCountry,
-    });
+  const onSubmit = async (formData) => {
+    setIsLoading(true);
+    try {
+      console.log('Form Submission Started:', formData);
 
-    if (!selectedCountry || !selectedCountry.value || !selectedCountry.phoneCode) {
-      throw new Error('Please select a valid country with value and phone code');
-    }
+      const payload = {
+        farmerName: formData.farmerName,
+        pattaNumber: formData.pattaNumber,
+        state: formData.state,
+        mandal: formData.mandal,
+        village: formData.village,
+        pincode: formData.pincode,
+        mobileNumber: formData.mobileNumber,
+        cropName: formData.cropName,
+        farmingMethod: formData.farmingMethod,
+        harvestDate: formData.harvestDate,
+        productName: formData.productName,
+        productForm: formData.productForm,
+        productCondition: formData.productCondition,
+        quantity: formData.quantity,
+        price: formData.price,
+        message: formData.message || undefined,
+      };
 
-    const payload = {
-      fullName: formData.fullName,
-      companyName: formData.companyName,
-      companyEmail: formData.companyEmail,
-      country: selectedCountry.value,
-      companyAddress: formData.companyAddress,
-      websiteLink: formData.websiteLink || undefined,
-      code: selectedCountry.phoneCode,
-      number: formData.mobileNumber,
-      additionalMessage: formData.message || undefined,
-      ...(formType === 'sales'
-        ? { SalesDetails: formData.requirements }
-        : { requirements: formData.requirements }),
-    };
-    
-    
-    console.log('Payload to Send:', payload);
-    const endpoint = formType === 'sales'
-      ? `${import.meta.env.VITE_BACKEND_URL}/api/form/salseform`
-      : `${import.meta.env.VITE_BACKEND_URL}/api/form/requirementform`;
+      console.log('Payload to Send:', payload);
+      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    console.log('Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers),
-    });
-
-    if (!response.ok) {
-      let errorData;
-      try {
-        errorData = await response.json();
-        console.log('Error Response Data:', errorData);
-      } catch (jsonError) {
-        console.error('Failed to parse error response:', jsonError);
-        errorData = { message: 'No error details available' };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server responded with status ${response.status}`);
       }
-      throw new Error(errorData.message || `Server responded with status ${response.status}`);
+
+      const responseData = await response.json();
+      console.log('Success Response:', responseData);
+
+      setIsSubmitted(true);
+      resetForm();
+    } catch (error) {
+      console.error('Submission Error:', {
+        message: error.message,
+        stack: error.stack,
+      });
+      alert(`Submission failed: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
-
-    const responseData = await response.json();
-    console.log('Success Response:', responseData);
-
-    setIsSubmitted(true);
-    resetForm();
-  } catch (error) {
-    console.error('Submission Error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-    });
-    alert(`Submission failed: ${error.message}`);
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   const InputField = ({ id, label, type = 'text', placeholder, required = true, validation = {} }) => (
     <div className="mb-4">
@@ -165,39 +127,30 @@ const onSubmit = async (formData) => {
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <button
-            type="button"
-            onClick={() => handleButtonClick('requirements')}
-            className={`px-6 py-3 rounded-md font-medium flex items-center gap-2 ${
-              formType === 'requirements'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-white text-emerald-600 border border-emerald-600'
-            }`}
-          >
-            <Mail size={18} /> Requirements Form
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleButtonClick('sales')}
-            className={`px-6 py-3 rounded-md font-medium flex items-center gap-2 ${
-              formType === 'sales'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-white text-emerald-600 border border-emerald-600'
-            }`}
-          >
-            <Mail size={18} /> Sales Form
-          </button>
-        </div>
-
-        <div className={`transition-all duration-300 ${
-          isFormVisible ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-        }`}>
+        {!isFormOpen ? (
+          <div className="text-center">
+            <button
+              onClick={toggleForm}
+              className="py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            >
+              Drop us a message for sale
+            </button>
+          </div>
+        ) : (
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              {formType === 'sales' ? 'Sales Inquiry' : 'Requirements Form'}
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <Mail size={24} /> Drop Us a Message for Sale
+              </h2>
+              <button
+                onClick={toggleForm}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
             {isSubmitted && (
               <div className="mb-6 p-4 bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-md">
@@ -207,99 +160,70 @@ const onSubmit = async (formData) => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputField id="fullName" label="Full Name" placeholder="John Doe" />
-                <InputField id="companyName" label="Company Name" placeholder="Acme Inc." />
+                <InputField id="farmerName" label="Farmer Name" placeholder="John Doe" />
+                <InputField id="pattaNumber" label="PPB/ROFR Patta Number" placeholder="Enter Patta Number" />
+                <InputField id="state" label="State" placeholder="Enter State" />
+                <InputField id="mandal" label="Mandal" placeholder="Enter Mandal" />
+                <InputField id="village" label="Revenue Village" placeholder="Enter Village" />
                 <InputField
-                  id="companyEmail"
-                  label="Company Email"
-                  type="email"
-                  placeholder="contact@company.com"
+                  id="pincode"
+                  label="Pincode"
+                  placeholder="500001"
                   validation={{
                     pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address',
+                      value: /^\d{6}$/,
+                      message: 'Pincode must be 6 digits',
                     },
                   }}
                 />
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Country <span className="text-red-500">*</span>
-                  </label>
-                  <Select
-                    options={countries}
-                    value={selectedCountry}
-                    onChange={handleCountryChange}
-                    placeholder="Select country"
-                    isSearchable
-                    classNamePrefix="select"
-                  />
-                  {!selectedCountry && errors.country && (
-                    <p className="mt-1 text-sm text-red-600">Country is required</p>
-                  )}
-                </div>
+                <InputField
+                  id="mobileNumber"
+                  label="Mobile Number"
+                  placeholder="9876543210"
+                  validation={{
+                    pattern: {
+                      value: /^\d{10}$/,
+                      message: 'Mobile number must be 10 digits',
+                    },
+                  }}
+                />
+                <InputField id="cropName" label="Crop Name" placeholder="Wheat" />
+                <InputField id="farmingMethod" label="Farming Method" placeholder="Organic, Natural, etc." />
+                <InputField
+                  id="harvestDate"
+                  label="Crop Harvesting Date"
+                  type="date"
+                  placeholder="Select Date"
+                />
+                <InputField id="productName" label="Product Name" placeholder="Wheat Grain" />
+                <InputField id="productForm" label="Product Form" placeholder="Grain, Flour, etc." />
+                <InputField id="productCondition" label="Product Condition" placeholder="Fresh, Dried, etc." />
+                <InputField
+                  id="quantity"
+                  label="Quantity (in kg/MT)"
+                  placeholder="1000"
+                  type="number"
+                  validation={{
+                    min: { value: 0, message: 'Quantity must be positive' },
+                  }}
+                />
+                <InputField
+                  id="price"
+                  label="Price (per kg)"
+                  placeholder="50"
+                  type="number"
+                  validation={{
+                    min: { value: 0, message: 'Price must be positive' },
+                  }}
+                />
               </div>
-
-              <TextAreaField
-                id="companyAddress"
-                label="Company Address"
-                placeholder="123 Business Rd, City, Country"
-              />
-
-              <InputField
-                id="websiteLink"
-                label="Website (Optional)"
-                placeholder="https://company.com"
-                required={false}
-                type="url"
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={selectedCountry?.phoneCode || ''}
-                      readOnly
-                      className="w-1/4 px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100"
-                    />
-                    <input
-                      type="tel"
-                      className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${
-                        errors.mobileNumber ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder="9876543210"
-                      {...register('mobileNumber', {
-                        required: 'Phone number is required',
-                        pattern: {
-                          value: /^\d{7,15}$/,
-                          message: 'Invalid phone number format',
-                        },
-                      })}
-                    />
-                  </div>
-                  {errors.mobileNumber && (
-                    <p className="mt-1 text-sm text-red-600">{errors.mobileNumber.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <TextAreaField
-                id="requirements"
-                label={formType === 'sales' ? 'SalesDetails' : 'Requirements'}
-                rows={4}
-                placeholder={formType === 'sales' ? 'Describe your sales inquiry...' : 'Describe your requirements...'}
-              />
-
               <TextAreaField
                 id="message"
-                label="Additional Message (Optional)"
+                label="Message (Optional)"
                 placeholder="Any additional information..."
                 required={false}
+                rows={4}
               />
-
               <div className="mt-6">
                 <button
                   type="submit"
@@ -313,7 +237,7 @@ const onSubmit = async (formData) => {
               </div>
             </form>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
