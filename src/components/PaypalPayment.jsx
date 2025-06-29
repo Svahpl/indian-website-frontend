@@ -34,13 +34,24 @@ const PaypalPayment = ({
 
   const createOrder = async (rzpOrderId) => {
     try {
+      // Add defensive checks
+      if (!products || !Array.isArray(products) || products.length === 0) {
+        throw new Error("Products array is empty or invalid");
+      }
+
+      if (!products[0] || !products[0]._id) {
+        throw new Error("Product ID is missing");
+      }
+
+      console.log("Creating order with product:", products[0]);
+
       const res = await axios.post(`${backendUrl}/api/order/india-order`, {
         user: uid,
         phoneNumber: num,
         shippingAddress: sha,
         expectedDelivery: new Date(),
-        razorpayOrderId: rzpOrderId, // Use the passed parameter
-        rzpId: rzpOrderId, // Add this field for verification lookup
+        razorpayOrderId: rzpOrderId,
+        rzpId: rzpOrderId,
         items: [
           {
             product: products[0]._id,
@@ -49,7 +60,7 @@ const PaypalPayment = ({
           },
         ],
         totalAmount: productPrice.toFixed(1),
-        paymentStatus: "Pending", // Set initial status
+        paymentStatus: "Pending",
       });
       console.log("Order Creation Response", res);
       return res.data;
@@ -64,15 +75,25 @@ const PaypalPayment = ({
     console.log("key", key);
 
     console.log("Sending total amount", productPrice.toFixed(1));
-    console.log(products);
+    console.log("Products at checkout start:", products);
 
     try {
       setIsLoading(true);
+
+      // Validate required data before proceeding
+      if (!products || !Array.isArray(products) || products.length === 0) {
+        throw new Error("Products data is missing or invalid");
+      }
+
+      if (!products[0] || !products[0]._id) {
+        throw new Error("Product information is incomplete");
+      }
 
       // Get user details first
       const userData = await getUserDetails();
 
       console.log("Sending Amount", productPrice.toFixed(1));
+      console.log("Products before Razorpay order:", products);
 
       // Create Razorpay order
       const checkoutResponse = await axios.post(
@@ -87,6 +108,7 @@ const PaypalPayment = ({
         setRazorpayOrderId(rzpOrderId);
         localStorage.setItem("rzp_order_id", rzpOrderId);
 
+        console.log("Products before createOrder:", products);
         // CREATE ORDER IN DATABASE BEFORE PAYMENT
         await createOrder(rzpOrderId);
 
@@ -110,9 +132,9 @@ const PaypalPayment = ({
           },
           notes: {
             address: sha,
-            city: userData.address[0].city,
-            state: userData.address[0].state,
-            pincode: userData.address[0].pinCode,
+            city: userData.address?.[0]?.city || "",
+            state: userData.address?.[0]?.state || "",
+            pincode: userData.address?.[0]?.pinCode || "",
             quantity: quantity,
             productId: products[0]._id,
           },
@@ -148,11 +170,26 @@ const PaypalPayment = ({
       setIsLoading(false); // Hide loader on error
       console.log(error);
       console.error("Error during checkout:", error);
-      toast.error("Payment initialization failed. Please try again.");
+      toast.error(`Payment initialization failed: ${error.message}`);
     }
   };
 
   const pay = async () => {
+    // Final validation before payment
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      toast.error(
+        "Product information is missing. Please refresh and try again."
+      );
+      return;
+    }
+
+    if (!products[0] || !products[0]._id) {
+      toast.error(
+        "Product details are incomplete. Please refresh and try again."
+      );
+      return;
+    }
+
     await initiateRazorpayCheckout();
   };
 
