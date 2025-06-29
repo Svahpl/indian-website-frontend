@@ -72,11 +72,13 @@ const PaypalPayment = ({
       // Get user details first
       const userData = await getUserDetails();
 
+      console.log("Sending Amount", productPrice.toFixed(1));
+
       // Create Razorpay order
       const checkoutResponse = await axios.post(
         `${backendUrl}/api/razorpay/checkout`,
         {
-          amount: productPrice.toFixed(1),
+          amount: productPrice.toFixed(1) * 100,
         }
       );
 

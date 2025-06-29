@@ -103,7 +103,7 @@ const RazorpayCartPayment = ({
       const checkoutResponse = await axios.post(
         `${backendUrl}/api/razorpay/checkout`,
         {
-          amount: productPrice.toFixed(1),
+          amount: productPrice.toFixed(1) * 100,
         }
       );
 

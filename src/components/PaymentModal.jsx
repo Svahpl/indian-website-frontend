@@ -25,89 +25,47 @@ const PaymentModal = ({
   product,
   selectedWeight,
 }) => {
-  const [shippingMethod, setShippingMethod] = useState("air");
   const [user, setUser] = useState();
   const [finalPrice, setFinalPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
-  const [dollar, setDollar] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [finalWeight, setFinalWeight] = useState();
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [showAddressModal, setShowAddressModal] = useState(false);
   const [step, setStep] = useState("address");
   const [loading, setLoading] = useState(true);
-  const [deliveryCharges, setDeliveryCharges] = useState({
-    air: 1000,
-    ship: 700,
-  });
+  const [deliveryCharge, setDeliveryCharge] = useState(200); // Default fallback
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
-
-  const handleShippingChange = (method) => {
-    setShippingMethod(method);
-  };
 
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity >= 1) {
       setQuantity(newQuantity);
       const newTotalWeight = selectedWeight * newQuantity;
       setFinalWeight(newTotalWeight);
-
-      if (shippingMethod === "ship" && newTotalWeight < 100) {
-        setShippingMethod("air");
-      }
     }
   };
 
-  const handleShippingCharges = (
-    price,
-    shippingMethod,
-    qty = 1,
-    productWeight
-  ) => {
-    // if (!dollar) return;
-
-    let shippingPrice = 0;
+  const calculateShippingAndTotal = (qty = 1, productWeight) => {
     const totalWeight = productWeight * qty;
-
-    if (shippingMethod === "ship") {
-      shippingPrice = totalWeight * (deliveryCharges.ship);
-    } else if (shippingMethod === "air") {
-      shippingPrice = totalWeight * (deliveryCharges.air);
-    }
-
+    const shippingPrice = totalWeight * deliveryCharge;
+    
     setShippingCost(shippingPrice);
     setFinalPrice(selectedWeight * product.price * quantity + shippingPrice);
   };
 
-  // const getCurrentDollarinInr = async () => {
-  //   try {
-  //     const res = await axios.get(`https://open.er-api.com/v6/latest/USD`);
-  //     const inr = res.data.rates.INR;
-  //     setDollar(inr);
-  //     return inr;
-  //   } catch (error) {
-  //     console.log(`Error fetching current dollar price in inr: ${error}`);
-  //     const fallbackRate = 85.567517;
-  //     setDollar(fallbackRate);
-  //     return fallbackRate;
-  //   }
-  // };
-
-  const fetchDeliveryCharges = async () => {
+  const fetchIndianDeliveryCharge = async () => {
     try {
-      const res = await axios.get(`${backendUrl}/api/charge/getcharge`);
-      if (res.data.delcharge && res.data.delcharge.length > 0) {
-        const charges = res.data.delcharge[0];
-        setDeliveryCharges({
-          air: charges.aircharge,
-          ship: charges.shipcharge,
-        });
+      const res = await axios.get(`${backendUrl}/api/indcharge/getingcharge`);
+      if (res.data.charge && res.data.charge.length > 0) {
+        const charge = res.data.charge[0].charge;
+        setDeliveryCharge(charge);
+        return charge;
       }
     } catch (error) {
-      console.error("Error fetching delivery charges:", error);
+      console.error("Error fetching Indian delivery charges:", error);
       toast.error("Failed to load shipping rates. Using default values.");
+      return deliveryCharge; // Return default value
     }
   };
 
@@ -116,10 +74,8 @@ const PaymentModal = ({
       try {
         setLoading(true);
 
-        const [rate] = await Promise.all([
-          // getCurrentDollarinInr(),
-          fetchDeliveryCharges(),
-        ]);
+        // Fetch delivery charges first
+        const charge = await fetchIndianDeliveryCharge();
 
         const userRes = await axios.get(
           `${backendUrl}/api/auth/user/${localStorage.getItem("uid")}`
@@ -138,17 +94,8 @@ const PaymentModal = ({
         const totalWeight = selectedWeight * quantity;
         setFinalWeight(totalWeight);
 
-        if (shippingMethod === "ship" && totalWeight < 100) {
-          setShippingMethod("air");
-        }
-
         if (product && selectedWeight) {
-          handleShippingCharges(
-            product.price,
-            shippingMethod,
-            quantity,
-            selectedWeight
-          );
+          calculateShippingAndTotal(quantity, selectedWeight);
         }
       } catch (error) {
         console.error("Initialization error:", error);
@@ -168,26 +115,16 @@ const PaymentModal = ({
       const totalWeight = selectedWeight * quantity;
       setFinalWeight(totalWeight);
 
-      if (shippingMethod === "ship" && totalWeight < 100) {
-        setShippingMethod("air");
-      }
-
       if (product && selectedWeight) {
-        handleShippingCharges(
-          product.price,
-          shippingMethod,
-          quantity,
-          selectedWeight
-        );
+        calculateShippingAndTotal(quantity, selectedWeight);
       }
     }
-  }, [shippingMethod, quantity, loading, deliveryCharges]);
+  }, [quantity, loading, deliveryCharge]);
 
   const formatPrice = (price) => {
     return typeof price === "number" ? price.toFixed(2) : "0.00";
   };
 
-  const isShipShippingAvailable = finalWeight >= 100;
   const productTotalPrice = selectedWeight * product.price * quantity;
 
   const formatAddress = (address) => {
@@ -267,10 +204,6 @@ const PaymentModal = ({
       </div>
     );
   }
-
-  // Calculate per kg rates for display
-  const airShippingPerKg = deliveryCharges.air;
-  const shipShippingPerKg = deliveryCharges.ship;
 
   return (
     <>
@@ -421,6 +354,33 @@ const PaymentModal = ({
                   </div>
                 </div>
 
+                {/* Shipping Info */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      Shipping Method
+                    </span>
+                    <span className="text-sm text-green-800 font-medium">
+                      Standard Delivery
+                    </span>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-800">
+                          Express Shipping
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          ₹{deliveryCharge}/kg • 5-7 business days
+                        </p>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        ₹{formatPrice(shippingCost)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Price Breakdown for Mobile */}
                 <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
                   <div className="flex justify-between text-sm">
@@ -433,9 +393,7 @@ const PaymentModal = ({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">
-                      Shipping ({shippingMethod === "air" ? "Air" : "Ship"})
-                    </span>
+                    <span className="text-gray-600">Shipping</span>
                     <span className="text-gray-900">
                       ₹{formatPrice(shippingCost)}
                     </span>
@@ -447,79 +405,6 @@ const PaymentModal = ({
                     </span>
                   </div>
                 </div>
-              </div>
-
-              {/* Shipping Option */}
-              <div className="space-y-3">
-                <h5 className="text-sm font-medium text-gray-700">
-                  Choose Shipping Method:
-                </h5>
-                <div
-                  className={`grid ${
-                    isShipShippingAvailable ? "grid-cols-2" : "grid-cols-1"
-                  } gap-3`}
-                >
-                  <label
-                    className={`flex flex-col items-center space-y-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                      shippingMethod === "air"
-                        ? "border-green-500 bg-green-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value="air"
-                      checked={shippingMethod === "air"}
-                      onChange={() => {
-                        handleShippingChange("air");
-                      }}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <div className="font-medium text-sm">Air Shipping</div>
-                      <div className="text-xs text-gray-500">
-                        ₹{formatPrice(finalWeight * airShippingPerKg)}
-                      </div>
-                      <div className="text-xs text-gray-500">5-7 days</div>
-                    </div>
-                  </label>
-
-                  {isShipShippingAvailable && (
-                    <label
-                      className={`flex flex-col items-center space-y-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                        shippingMethod === "ship"
-                          ? "border-green-500 bg-green-50"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="shipping"
-                        value="ship"
-                        checked={shippingMethod === "ship"}
-                        onChange={() => {
-                          handleShippingChange("ship");
-                        }}
-                        className="sr-only"
-                      />
-                      <div className="text-center">
-                        <div className="font-medium text-sm">Sea Shipping</div>
-                        <div className="text-xs text-gray-500">
-                          ₹{formatPrice(finalWeight * shipShippingPerKg)}
-                        </div>
-                        <div className="text-xs text-gray-500">15-25 days</div>
-                      </div>
-                    </label>
-                  )}
-                </div>
-
-                {!isShipShippingAvailable && (
-                  <div className="text-xs text-gray-500 text-center bg-gray-100 p-3 rounded-lg">
-                    Sea shipping is available for orders of 100kg or more.
-                    Current weight: {finalWeight}kg
-                  </div>
-                )}
               </div>
 
               {/* Security Badge */}
@@ -536,7 +421,6 @@ const PaymentModal = ({
                     uid={localStorage.getItem("uid")}
                     num={selectedAddress.phone || user?.phoneNumber}
                     sha={formatAddress(selectedAddress)}
-                    dmode={shippingMethod}
                     products={product}
                     weight={finalWeight}
                     userSelectedWeight={selectedWeight}
@@ -751,95 +635,36 @@ const PaymentModal = ({
                       </div>
                     </div>
 
-                    {/* Shipping Option */}
-                    <div className="mt-6 space-y-4">
-                      <h5 className="text-sm font-medium text-gray-700">
-                        Choose Shipping Method:
-                      </h5>
-                      <div
-                        className={`grid ${
-                          isShipShippingAvailable
-                            ? "grid-cols-2"
-                            : "grid-cols-1"
-                        } gap-4`}
-                      >
-                        <label
-                          className={`flex flex-col space-y-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                            shippingMethod === "air"
-                              ? "border-green-500 bg-green-50"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <input
-                              type="radio"
-                              name="shipping-desktop"
-                              value="air"
-                              checked={shippingMethod === "air"}
-                              onChange={() => {
-                                handleShippingChange("air");
-                              }}
-                              className="w-4 h-4 text-green-800"
-                            />
-                            <div>
-                              <div className="font-medium text-sm">
-                                Air Shipping
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                5-7 business days
-                              </div>
-                            </div>
+                    {/* Shipping Info */}
+                    <div className="mt-6 pt-4 border-t border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-gray-700">
+                          Shipping Method
+                        </span>
+                        <span className="text-sm text-green-800 font-medium">
+                          Standard Delivery
+                        </span>
+                      </div>
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-green-800">
+                              Express Shipping
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              ₹{deliveryCharge}/kg • 5-7 business days
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Total weight: {finalWeight}kg
+                            </p>
                           </div>
                           <div className="text-right">
-                            <span className="text-sm font-semibold text-gray-900">
-                              ₹{formatPrice(finalWeight * airShippingPerKg)}
+                            <span className="text-lg font-semibold text-gray-900">
+                              ₹{formatPrice(shippingCost)}
                             </span>
                           </div>
-                        </label>
-
-                        {isShipShippingAvailable && (
-                          <label
-                            className={`flex flex-col space-y-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                              shippingMethod === "ship"
-                                ? "border-green-500 bg-green-50"
-                                : "border-gray-200 hover:border-gray-300"
-                            }`}
-                          >
-                            <div className="flex items-center space-x-3">
-                              <input
-                                type="radio"
-                                name="shipping-desktop"
-                                value="ship"
-                                checked={shippingMethod === "ship"}
-                                onChange={() => {
-                                  handleShippingChange("ship");
-                                }}
-                                className="w-4 h-4 text-green-800"
-                              />
-                              <div>
-                                <div className="font-medium text-sm">
-                                  Sea Shipping
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  15-25 business days
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-sm font-semibold text-gray-900">
-                                ₹{formatPrice(finalWeight * shipShippingPerKg)}
-                              </span>
-                            </div>
-                          </label>
-                        )}
-                      </div>
-
-                      {!isShipShippingAvailable && (
-                        <div className="text-xs text-gray-500 text-center bg-gray-100 p-3 rounded-lg">
-                          Sea shipping is available for orders of 100kg or more.
-                          Current weight: {finalWeight}kg
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
@@ -853,9 +678,7 @@ const PaymentModal = ({
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">
-                          Shipping ({shippingMethod === "air" ? "Air" : "Sea"})
-                        </span>
+                        <span className="text-gray-600">Shipping</span>
                         <span className="text-gray-900">
                           ₹{formatPrice(shippingCost)}
                         </span>
@@ -895,7 +718,6 @@ const PaymentModal = ({
                         uid={localStorage.getItem("uid")}
                         num={selectedAddress.phone || user?.phoneNumber}
                         sha={formatAddress(selectedAddress)}
-                        dmode={shippingMethod}
                         products={[product]}
                         weight={finalWeight}
                         userSelectedWeight={selectedWeight}
