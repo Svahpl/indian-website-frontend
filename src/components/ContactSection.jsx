@@ -298,7 +298,7 @@ const ContactSection = () => {
               </div>
               <TextAreaField
                 id="message"
-                label="Message (Optional)"
+                label="Message "
                 required={false}
                 rows={4}
               />
