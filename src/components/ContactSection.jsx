@@ -237,7 +237,8 @@ const ContactSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InputField id="farmerName" label="Farmer Name" />
                 <InputField id="pattaNumber" label="PPB/ROFR Patta Number" />
-                <SelectField id="state" label="State" options={indianStates} />
+                <SelectField id="state" label="Select State" options={indianStates} />
+                <InputField id="district " label="District " />
                 <InputField id="mandal" label="Mandal" />
                 <InputField id="village" label="Revenue Village" />
                 <InputField
@@ -288,7 +289,7 @@ const ContactSection = () => {
                 />
                 <InputField
                   id="price"
-                  label="Price (per kg)"
+                  label="Price (per MT)"
                   type="number"
                   validation={{
                     min: { value: 0, message: 'Price must be positive' },
