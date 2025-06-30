@@ -238,9 +238,9 @@ const ContactSection = () => {
                 <InputField id="farmerName" label="Farmer Name" />
                 <InputField id="pattaNumber" label="PPB/ROFR Patta Number" />
                 <SelectField id="state" label="Select State" options={indianStates} />
-                <InputField id="district " label="District " />
-                <InputField id="mandal" label="Mandal" />
-                <InputField id="village" label="Revenue Village" />
+                <InputField id="district " label="District Name " />
+                <InputField id="mandal" label="Mandal Name" />
+                <InputField id="village" label="Revenue Village Name" />
                 <InputField
                   id="pincode"
                   label="Pincode"
