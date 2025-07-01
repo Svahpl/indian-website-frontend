@@ -6,7 +6,7 @@ const CyberCrimeWarning = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(true);
+      setIsVisible(false);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
