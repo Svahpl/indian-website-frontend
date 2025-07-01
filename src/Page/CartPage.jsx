@@ -47,12 +47,13 @@ const CartPage = () => {
   }, [refresh]);
 
   const deleteCartItem = async (id, qty, action, cartItemId) => {
+    console.log("id", id);
     try {
       if (action === "delete") {
         const res = await axios.delete(
           `${
             import.meta.env.VITE_BACKEND_URL
-          }/api/cart/delete-cart-item?userId=${userId}&productId=${id}`
+          }/api/cart/delete-cart-item?userId=${userId}&cartItemId=${id}`
         );
         toast("Deleted");
         refreshComponent();

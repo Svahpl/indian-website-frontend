@@ -19,9 +19,7 @@ const CategoryProducts = () => {
   const getAllProducts = async () => {
     try {
       setIsApiLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/product/get-all`
-      );
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/get-all`);
       console.log("DEBUG PRODUCT API RESPONSE", res.data);
       setAllProducts(res.data.products); // ✅ save all products
       setDummyProducts(res.data.products);
@@ -50,7 +48,8 @@ const CategoryProducts = () => {
   const handleCategoryChange = (category) => {
     executeWithLoading(() => {
       const filteredProducts = allProducts.filter(
-        (pd) => pd.category === category
+        (pd) =>
+          pd.category?.toLowerCase().trim() === category.toLowerCase().trim()
       );
       setDummyProducts(filteredProducts);
     });
@@ -131,12 +130,19 @@ const CategoryProducts = () => {
                 className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
               >
                 {[
-                  ...new Set(allProducts.map((product) => product.category)),
-                ].map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
-                  </option>
-                ))}
+                  ...new Set(
+                    allProducts
+                      .map((product) => product.category?.toLowerCase().trim())
+                      .filter(Boolean) // Remove any null/undefined values
+                  ),
+                ]
+                  .sort() // Optional: sort categories alphabetically
+                  .map((category, index) => (
+                    <option key={index} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}{" "}
+                      {/* Capitalize first letter for display */}
+                    </option>
+                  ))}
               </select>
             </div>
 

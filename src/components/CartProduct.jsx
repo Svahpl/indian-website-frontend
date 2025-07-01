@@ -13,7 +13,7 @@ const CartProduct = ({
 
   const handleDelete = () => {
     // id, qty, action, cartItemId
-    onDelete?.(product._id, null, "delete", "");
+    onDelete?.(product.cartId, null, "delete", "");
     // onDelete?.(product.id);
   };
 
