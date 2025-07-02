@@ -3,10 +3,8 @@ import { useForm } from 'react-hook-form';
 import { Mail } from 'lucide-react';
 import Swal from 'sweetalert2';
 
-
 const ContactSection = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -14,92 +12,75 @@ const ContactSection = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    clearErrors,
-  } = useForm();
+  } = useForm({ mode: 'onChange' });
 
   const toggleForm = () => {
-    setIsFormOpen(!isFormOpen);
-    if (!isFormOpen) {
-      resetForm();
+    setIsFormOpen((prev) => !prev);
+    if (!isFormOpen) reset();
+  };
+
+  const onSubmit = async (formData) => {
+    setIsLoading(true);
+    try {
+      const payload = {
+        farmerName: formData.farmerName,
+        pattaNumber: formData.pattaNumber,
+        state: formData.state,
+        district: formData.district,
+        mandal: formData.mandal,
+        village: formData.village,
+        pincode: formData.pincode,
+        mobileNumber: formData.mobileNumber,
+        cropName: formData.cropName,
+        farmingMethod: formData.farmingMethod,
+        harvestDate: formData.harvestDate,
+        productName: formData.productName,
+        productForm: formData.productForm,
+        productCondition: formData.productCondition,
+        quantity: formData.quantity,
+        price: formData.price,
+        message: formData.message || undefined,
+      };
+
+      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form. Please try again.');
+      }
+
+      await response.json();
+      reset();
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'One of our representatives will get back to you within 24 hours.',
+        confirmButtonColor: '#10B981',
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Submission Failed',
+        text: error.message || 'An unexpected error occurred.',
+        confirmButtonColor: '#10B981',
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const resetForm = () => {
-    reset();
-    clearErrors();
-    setIsSubmitted(false);
-  };const onSubmit = async (formData) => {
-  setIsLoading(true);
-  try {
-    const payload = {
-      farmerName: formData.farmerName,
-      pattaNumber: formData.pattaNumber,
-      state: formData.state,
-      mandal: formData.mandal,
-      village: formData.village,
-      pincode: formData.pincode,
-      mobileNumber: formData.mobileNumber,
-      cropName: formData.cropName,
-      farmingMethod: formData.farmingMethod,
-      harvestDate: formData.harvestDate,
-      productName: formData.productName,
-      productForm: formData.productForm,
-      productCondition: formData.productCondition,
-      quantity: formData.quantity,
-      price: formData.price,
-      message: formData.message || undefined,
-    };
-
-    const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
-
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `Server responded with status ${response.status}`
-      );
-    }
-
-    await response.json();
-    setIsSubmitted(true);
-    resetForm();
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Thank you!',
-      text: 'One of our representatives will get back to you within 24 hours.',
-      confirmButtonColor: '#10B981',
-    });
-
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: `Submission failed: ${error.message}`,
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-  const InputField = ({
-    id,
-    label,
-    type = 'text',
-    required = true,
-    validation = {},
-  }) => (
+  const InputField = ({ id, label, type = 'text', validation = {} }) => (
     <div className="mb-4">
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
+        {label} <span className="text-red-500">*</span>
       </label>
       <input
         id={id}
@@ -108,12 +89,12 @@ const ContactSection = () => {
           errors[id] ? 'border-red-500' : 'border-gray-300'
         }`}
         {...register(id, {
-          required: required && `${label} is required`,
+          required: `${label} is required`,
           ...validation,
         })}
       />
       {errors[id] && (
-        <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>
+        <p className="mt-1 text-sm text-red-600">{errors[id]?.message}</p>
       )}
     </div>
   );
@@ -138,15 +119,15 @@ const ContactSection = () => {
         ))}
       </select>
       {errors[id] && (
-        <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>
+        <p className="mt-1 text-sm text-red-600">{errors[id]?.message}</p>
       )}
     </div>
   );
 
-  const TextAreaField = ({ id, label, rows = 3, required = true }) => (
+  const TextAreaField = ({ id, label, rows = 3 }) => (
     <div className="mb-4">
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
+        {label}
       </label>
       <textarea
         id={id}
@@ -154,10 +135,10 @@ const ContactSection = () => {
         className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${
           errors[id] ? 'border-red-500' : 'border-gray-300'
         }`}
-        {...register(id, { required: required && `${label} is required` })}
+        {...register(id)}
       />
       {errors[id] && (
-        <p className="mt-1 text-sm text-red-600">{errors[id].message}</p>
+        <p className="mt-1 text-sm text-red-600">{errors[id]?.message}</p>
       )}
     </div>
   );
@@ -217,6 +198,7 @@ const ContactSection = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <Mail className="h-6 w-6" /> Contact Us
               </h2>
               <button
                 onClick={toggleForm}
@@ -239,18 +221,12 @@ const ContactSection = () => {
               </button>
             </div>
 
-            {isSubmitted && (
-              <div className="mb-6 p-4 bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-md">
-                Thank you. One of our representative will get back to you within 24 hours.
-              </div>
-            )}
-
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <InputField id="farmerName" label="Farmer Name" />
                 <InputField id="pattaNumber" label="PPB/ROFR Patta Number" />
                 <SelectField id="state" label="Select State" options={indianStates} />
-                <InputField id="district " label="District Name " />
+                <InputField id="district" label="District Name" />
                 <InputField id="mandal" label="Mandal Name" />
                 <InputField id="village" label="Revenue Village Name" />
                 <InputField
@@ -308,12 +284,7 @@ const ContactSection = () => {
                   }}
                 />
               </div>
-              <TextAreaField
-                id="message"
-                label="Message "
-                required={false}
-                rows={4}
-              />
+              <TextAreaField id="message" label="Message" rows={4} />
               <div className="mt-6">
                 <button
                   type="submit"
