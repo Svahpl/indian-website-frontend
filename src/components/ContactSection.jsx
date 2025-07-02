@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail } from 'lucide-react';
+import Swal from 'sweetalert2';
+
 
 const ContactSection = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -26,57 +28,67 @@ const ContactSection = () => {
     reset();
     clearErrors();
     setIsSubmitted(false);
-  };
+  };const onSubmit = async (formData) => {
+  setIsLoading(true);
+  try {
+    const payload = {
+      farmerName: formData.farmerName,
+      pattaNumber: formData.pattaNumber,
+      state: formData.state,
+      mandal: formData.mandal,
+      village: formData.village,
+      pincode: formData.pincode,
+      mobileNumber: formData.mobileNumber,
+      cropName: formData.cropName,
+      farmingMethod: formData.farmingMethod,
+      harvestDate: formData.harvestDate,
+      productName: formData.productName,
+      productForm: formData.productForm,
+      productCondition: formData.productCondition,
+      quantity: formData.quantity,
+      price: formData.price,
+      message: formData.message || undefined,
+    };
 
-  const onSubmit = async (formData) => {
-    setIsLoading(true);
-    try {
-      const payload = {
-        farmerName: formData.farmerName,
-        pattaNumber: formData.pattaNumber,
-        state: formData.state,
-        mandal: formData.mandal,
-        village: formData.village,
-        pincode: formData.pincode,
-        mobileNumber: formData.mobileNumber,
-        cropName: formData.cropName,
-        farmingMethod: formData.farmingMethod,
-        harvestDate: formData.harvestDate,
-        productName: formData.productName,
-        productForm: formData.productForm,
-        productCondition: formData.productCondition,
-        quantity: formData.quantity,
-        price: formData.price,
-        message: formData.message || undefined,
-      };
+    const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
 
-      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Server responded with status ${response.status}`
-        );
-      }
-
-      await response.json();
-      setIsSubmitted(true);
-      resetForm();
-    } catch (error) {
-      alert(`Submission failed: ${error.message}`);
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.message || `Server responded with status ${response.status}`
+      );
     }
-  };
+
+    await response.json();
+    setIsSubmitted(true);
+    resetForm();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Thank you!',
+      text: 'One of our representatives will get back to you within 24 hours.',
+      confirmButtonColor: '#10B981',
+    });
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: `Submission failed: ${error.message}`,
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const InputField = ({
     id,
