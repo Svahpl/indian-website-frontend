@@ -1,6 +1,6 @@
 import React from "react";
 import { Mail, Instagram, Youtube } from "lucide-react";
-
+import GoogleTranslate from "./GoogleTranslate";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -205,6 +205,8 @@ const Footer = () => {
             </div>
           </div>
         </div>
+
+        <GoogleTranslate />
 
         {/* Bottom Footer */}
         <div className="pt-6 text-sm text-gray-400 text-center sm:text-left">
