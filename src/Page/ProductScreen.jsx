@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Bell,
   User,
+  Heart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import PaymentModal from "../components/PaymentModal";
@@ -59,8 +60,26 @@ const ProductScreen = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const isItemInWishlist = async () => {
+    try {
+      const res = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/wishlist/verify-product/${localStorage.getItem("uid")}/${id}`
+      );
+      if (res.status === 200) {
+        if (res.data.isPresent) {
+          setIsLiked(!isLiked);
+        }
+      }
+    } catch (error) {
+      console.error("isItemInWishlist error", error);
+    }
+  };
+
   // Fetch comments for the product
   useEffect(() => {
+    isItemInWishlist();
     const fetchComments = async () => {
       try {
         setLoadingComments(true);
@@ -244,6 +263,38 @@ const ProductScreen = () => {
     }
   };
 
+  const addToWishlist = async () => {
+    const newIsLiked = !isLiked; // Calculate the intended state
+    setIsLiked(newIsLiked);
+
+    try {
+      if (!newIsLiked) {
+        // User is unliking the item
+        const res = await axios.delete(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/wishlist/delete-to-wishlist/${localStorage.getItem(
+            "uid"
+          )}/${id}`
+        );
+        if (res.status === 200) toast.success("Removed from Wishlist");
+      } else {
+        // User is liking the item
+        const res = await axios.post(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/wishlist/add-to-wishlist/${localStorage.getItem("uid")}/${id}`
+        );
+        if (res.status === 200) {
+          toast("Saved!", { icon: "❤️" });
+        }
+      }
+    } catch (error) {
+      if (error?.response?.status === 409) toast.success("Already Present");
+      console.error("addToWishlist error", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -265,8 +316,8 @@ const ProductScreen = () => {
 
           {/* Product Images */}
           <div className="px-8 py-12 relative">
-            {/* <button
-              onClick={() => setIsLiked(!isLiked)}
+            <button
+              onClick={() => addToWishlist()}
               className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition z-20"
             >
               <Heart
@@ -274,7 +325,7 @@ const ProductScreen = () => {
                   isLiked ? "fill-red-500 text-red-500" : "text-gray-400"
                 }`}
               />
-            </button> */}
+            </button>
 
             <button
               onClick={prevImage}
@@ -538,8 +589,8 @@ const ProductScreen = () => {
               </div>
 
               <div className="rounded-3xl p-12 relative overflow-hidden">
-                {/* <button
-                  onClick={() => setIsLiked(!isLiked)}
+                <button
+                  onClick={() => addToWishlist()}
                   className="absolute top-6 right-6 p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition shadow-lg hover:shadow-xl transform hover:scale-110 z-20"
                 >
                   <Heart
@@ -549,7 +600,7 @@ const ProductScreen = () => {
                         : "text-gray-400 hover:text-gray-600"
                     }`}
                   />
-                </button> */}
+                </button>
 
                 <button
                   onClick={prevImage}

@@ -218,11 +218,11 @@ const CartPage = () => {
             </div>
 
             {/* Deselect All Items */}
-            <div className="deselect-div mt-2 mb-4">
+            {/* <div className="deselect-div mt-2 mb-4">
               <span className="ml-4 lg:ml-0 text-blue-600 text-sm cursor-pointer hover:underline">
                 Deselect all items
               </span>
-            </div>
+            </div> */}
 
             {/* Cart Product Items */}
             {userCartItems?.length > 0 ? (

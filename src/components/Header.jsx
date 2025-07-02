@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Menu,
   X,
@@ -24,12 +24,20 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+  const searchRef = useRef(null);
 
   // Get auth state and user data
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
-  const { cartCount, setCartCounter } = useAppContext();
+  const { cartCount, setCartCounter, allProducts, setAllProducts } =
+    useAppContext(); // Get products from context
   const { isLoaded: userLoaded, user } = useUser();
+
+  // Local state for products if not available in context
+  const [localProducts, setLocalProducts] = useState([]);
 
   const updateCartCounter = useUpdateCartCounter();
 
@@ -43,9 +51,197 @@ const Header = () => {
     updateCartCounter();
   }, []);
 
+  // Fetch products if not available in context
+  useEffect(() => {
+    const getAllProducts = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/product/get-all`
+        );
+        const data = await res.json();
+        console.log("DEBUG PRODUCT API RESPONSE", data);
+        if (data.products) {
+          setLocalProducts(data.products);
+          // Update context if setter is available
+          if (setAllProducts) {
+            setAllProducts(data.products);
+          }
+        }
+      } catch (error) {
+        console.log(`Error fetching all products: ${error}`);
+      }
+    };
+
+    // Only fetch if we don't have products in context
+    if (!allProducts || allProducts.length === 0) {
+      getAllProducts();
+    }
+  }, [allProducts, setAllProducts]);
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Search functionality
+  const performSearch = (query) => {
+    const productsToSearch = allProducts || localProducts; // Use context products or local products
+
+    console.log("Performing search for:", query);
+    console.log("Products to search:", productsToSearch?.length || 0);
+
+    if (!query.trim() || !productsToSearch || productsToSearch.length === 0) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+
+    // Filter products based on search query
+    const filteredProducts = productsToSearch.filter((product) => {
+      const searchQuery = query.toLowerCase();
+      return (
+        product.title.toLowerCase().includes(searchQuery) ||
+        product.description.toLowerCase().includes(searchQuery) ||
+        product.category.toLowerCase().includes(searchQuery) ||
+        product.subcategory.toLowerCase().includes(searchQuery) ||
+        (product.KeyIngredients &&
+          product.KeyIngredients.toLowerCase().includes(searchQuery))
+      );
+    });
+
+    console.log("Filtered products:", filteredProducts.length);
+
+    // Limit to top 6 results for better UX
+    setSearchResults(filteredProducts.slice(0, 6));
+    setShowSearchResults(true);
+    setIsSearching(false);
+  };
+
+  // Handle search input change with debouncing
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      if (searchText.trim()) {
+        performSearch(searchText);
+      } else {
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(delayedSearch);
+  }, [searchText, allProducts, localProducts]);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Search:", searchText);
+    if (searchText.trim()) {
+      // Navigate to products page with search query
+      // navigate(`/view-products?search=${encodeURIComponent(searchText)}`);
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleProductClick = (productId) => {
+    navigate(`/view-product/${productId}`);
+    setShowSearchResults(false);
+    setSearchText("");
+  };
+
+  const SearchResults = ({ isMobile = false }) => {
+    if (!showSearchResults) return null;
+
+    return (
+      <div
+        className={`absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto ${
+          isMobile ? "mx-0" : "mx-0"
+        }`}
+      >
+        {isSearching ? (
+          <div className="p-4 text-center text-gray-500">
+            <div className="animate-spin inline-block w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full mr-2"></div>
+            Searching...
+          </div>
+        ) : searchResults.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">
+            <Search size={24} className="mx-auto mb-2 text-gray-300" />
+            <p className="text-sm">No products found for "{searchText}"</p>
+          </div>
+        ) : (
+          <>
+            <div className="p-3 border-b border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-700">
+                Search Results ({searchResults.length})
+              </h3>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {searchResults.map((product) => (
+                <div
+                  key={product._id}
+                  onClick={() => handleProductClick(product._id)}
+                  className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-b-0 transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={product.images[0]}
+                      alt={product.title}
+                      className="w-12 h-12 object-cover rounded-md bg-gray-100"
+                      onError={(e) => {
+                        e.target.src = "/images/placeholder-product.png"; // Fallback image
+                      }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-gray-900 truncate">
+                        {product.title}
+                      </h4>
+                      <p className="text-xs text-gray-500 truncate">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-sm font-semibold text-primary-600">
+                          ₹{product.price}
+                        </span>
+                        <span className="text-xs text-gray-400 capitalize">
+                          {product.category}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {searchResults.length > 0 && (
+              <div className="p-3 border-t border-gray-100">
+                {/* <button
+                  onClick={() => {
+                    navigate(
+                      `/view-products?search=${encodeURIComponent(searchText)}`
+                    );
+                    setShowSearchResults(false);
+                  }}
+                  className="w-full text-center text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  View all results for "{searchText}"
+                </button> */}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
   };
 
   // Auth component that handles loading states properly
@@ -221,44 +417,50 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Search - Always visible */}
-          <form onSubmit={handleSearch} className="sm:hidden w-full">
-            <div className="relative">
+          {/* Mobile Search - Always visible with results */}
+          <div className="sm:hidden w-full relative" ref={searchRef}>
+            <form onSubmit={handleSearch}>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchText}
+                  onChange={handleSearchInputChange}
+                  placeholder="Search products..."
+                  className="w-full py-2.5 pl-4 pr-10 rounded-full border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary-300 bg-gray-50 focus:bg-white text-gray-700 transition duration-200"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary-700 transition-colors"
+                >
+                  <Search size={18} strokeWidth={2.5} />
+                </button>
+              </div>
+            </form>
+            <SearchResults isMobile={true} />
+          </div>
+
+          {/* Desktop Search with results */}
+          <div
+            className="hidden sm:block w-full max-w-md relative"
+            ref={searchRef}
+          >
+            <form onSubmit={handleSearch}>
               <input
                 type="text"
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={handleSearchInputChange}
                 placeholder="Search products..."
-                className="w-full py-2.5 pl-4 pr-10 rounded-full border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary-300 bg-gray-50 focus:bg-white text-gray-700 transition duration-200"
+                className="w-full py-2.5 pl-5 pr-12 rounded-full border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary-300 bg-gray-50 focus:bg-white text-gray-700 transition duration-200"
               />
               <button
                 type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary-700 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-primary-700 transition-colors"
               >
-                <Search size={18} strokeWidth={2.5} />
+                <Search size={20} strokeWidth={2.5} />
               </button>
-            </div>
-          </form>
-
-          {/* Desktop Search */}
-          <form
-            onSubmit={handleSearch}
-            className="hidden sm:block w-full max-w-md relative"
-          >
-            <input
-              type="text"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Search products..."
-              className="w-full py-2.5 pl-5 pr-12 rounded-full border border-gray-200 shadow-sm focus:ring-2 focus:ring-primary-300 bg-gray-50 focus:bg-white text-gray-700 transition duration-200"
-            />
-            <button
-              type="submit"
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-primary-700 transition-colors"
-            >
-              <Search size={20} strokeWidth={2.5} />
-            </button>
-          </form>
+            </form>
+            <SearchResults isMobile={false} />
+          </div>
 
           {/* Icons - Desktop */}
           <div className="hidden sm:flex items-center gap-4">
@@ -300,12 +502,6 @@ const Header = () => {
             >
               Products
             </Link>
-            {/* <Link
-              to="/my-account"
-              className="px-4 py-2 font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50/60 rounded-md transition"
-            >
-              Account
-            </Link> */}
             <Link
               to="/About"
               className="px-4 py-2 font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50/60 rounded-md transition"
@@ -353,13 +549,6 @@ const Header = () => {
               >
                 Products
               </Link>
-              {/* <Link
-                to="/my-account"
-                onClick={() => setMenuOpen(false)}
-                className="py-3 px-4 text-gray-700 hover:bg-primary-50 rounded-md font-medium transition-colors"
-              >
-                Account
-              </Link> */}
               <Link
                 to="/About"
                 onClick={() => setMenuOpen(false)}

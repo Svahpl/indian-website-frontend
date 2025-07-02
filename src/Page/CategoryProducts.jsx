@@ -181,7 +181,7 @@ const CategoryProducts = () => {
                 }}
                 className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-black disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
               />
-              <p className="text-sm mt-1 text-gray-400">Up to ${price}</p>
+              <p className="text-sm mt-1 text-gray-400">Up to ₹{price}</p>
             </div>
 
             {/* Customer Rating Filter */}

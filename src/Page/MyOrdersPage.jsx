@@ -721,15 +721,7 @@ Thank you for shopping with Natural Store!
                               <span>Invoice</span>
                             </button>
                           ) : (
-                            <button
-                              disabled
-                              className="bg-gray-300 text-gray-500 px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 cursor-not-allowed"
-                              title="Cannot view invoice for cancelled orders"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                              <span>Unavailable</span>
-                            </button>
+                            <></>
                           )}
 
                           {canCancelOrder(
@@ -748,20 +740,7 @@ Thank you for shopping with Natural Store!
                             </button>
                           ) : (
                             order.orderStatus.toLowerCase() !== "cancelled" && (
-                              <button
-                                disabled
-                                className="bg-gray-300 text-gray-500 px-3 py-1.5 text-xs md:text-sm rounded-full flex items-center gap-1.5 cursor-not-allowed"
-                                title={
-                                  order.paymentStatus.toLowerCase() !==
-                                  "success"
-                                    ? "Only successful payments can be cancelled"
-                                    : "This order cannot be cancelled"
-                                }
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                                <span>Unavailable</span>
-                              </button>
+                              <></>
                             )
                           )}
                         </div>
