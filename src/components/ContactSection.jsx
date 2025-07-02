@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail } from 'lucide-react';
-import Swal from 'sweetalert2';
 
 const ContactSection = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -58,20 +57,9 @@ const ContactSection = () => {
 
       await response.json();
       reset();
-      
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'One of our representatives will get back to you within 24 hours.',
-        confirmButtonColor: '#10B981',
-      });
+      alert('Success! One of our representatives will get back to you within 24 hours.');
     } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Submission Failed',
-        text: error.message || 'An unexpected error occurred.',
-        confirmButtonColor: '#10B981',
-      });
+      alert(`Submission Failed: ${error.message || 'An unexpected error occurred.'}`);
     } finally {
       setIsLoading(false);
     }
