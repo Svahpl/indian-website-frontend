@@ -10,7 +10,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ShippingPolicy from "./components/ShippingPolicy";
 import TermsOfService from "./components/TermsOfService";
-// import PrivacyPolicy from "./components/PrivacyPolicy";
+
 import {
   HomePage,
   CartPage,
