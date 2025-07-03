@@ -27,21 +27,21 @@ const ContactSection = () => {
         state: formData.state,
         district: formData.district,
         mandal: formData.mandal,
-        village: formData.village,
+        revenueVillage: formData.village,
         pincode: formData.pincode,
         mobileNumber: formData.mobileNumber,
         cropName: formData.cropName,
         farmingMethod: formData.farmingMethod,
-        harvestDate: formData.harvestDate,
+        harvestingDate: formData.harvestDate,
         productName: formData.productName,
         productForm: formData.productForm,
         productCondition: formData.productCondition,
         quantity: formData.quantity,
-        price: formData.price,
+        pricePerKg: formData.price,
         message: formData.message || undefined,
       };
 
-      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/form/salesform`;
+      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/sale/submitsale`;
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -73,9 +73,8 @@ const ContactSection = () => {
       <input
         id={id}
         type={type}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${
-          errors[id] ? 'border-red-500' : 'border-gray-300'
-        }`}
+        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${errors[id] ? 'border-red-500' : 'border-gray-300'
+          }`}
         {...register(id, {
           required: `${label} is required`,
           ...validation,
@@ -94,9 +93,8 @@ const ContactSection = () => {
       </label>
       <select
         id={id}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${
-          errors[id] ? 'border-red-500' : 'border-gray-300'
-        }`}
+        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${errors[id] ? 'border-red-500' : 'border-gray-300'
+          }`}
         {...register(id, { required: `${label} is required` })}
       >
         <option value="">Select</option>
@@ -120,9 +118,8 @@ const ContactSection = () => {
       <textarea
         id={id}
         rows={rows}
-        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${
-          errors[id] ? 'border-red-500' : 'border-gray-300'
-        }`}
+        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 ${errors[id] ? 'border-red-500' : 'border-gray-300'
+          }`}
         {...register(id)}
       />
       {errors[id] && (
@@ -277,9 +274,8 @@ const ContactSection = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white font-medium bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 ${
-                    isLoading ? 'opacity-70 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white font-medium bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                 >
                   {isLoading ? 'Submitting...' : 'Submit'}
                 </button>
