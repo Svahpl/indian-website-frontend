@@ -492,6 +492,10 @@ const Header = () => {
           <div className="flex items-center space-x-1">
             <Link
               to="/"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent default routing if you want full reload
+                window.location.href = "/"; // Reloads from server
+              }}
               className="px-4 py-2 font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50/60 rounded-md transition"
             >
               Home
