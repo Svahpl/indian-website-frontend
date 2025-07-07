@@ -36,3 +36,27 @@
     display: initial;
   }
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  touch-action: auto;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.main-content {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
