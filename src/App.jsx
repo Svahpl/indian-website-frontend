@@ -27,8 +27,34 @@ import { AddressManager } from "./components/compIndex";
 import PaypalPayment from "./components/PaypalPayment";
 import PaymentSuccess from "./components/PaymentSuccess";
 import { Toaster } from "react-hot-toast";
+import Lenis from '@studio-freight/lenis';
 
 function App() {
+   useEffect(() => {
+    const titleElement = document.querySelector("title[data-default]");
+    if (titleElement) {
+      titleElement.removeAttribute("data-default");
+    }
+  }, []);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.3,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+      smooth: true,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy(); // cleanup
+    };
+  }, []);
   useEffect(() => {
     const titleElement = document.querySelector("title[data-default]");
     if (titleElement) {
