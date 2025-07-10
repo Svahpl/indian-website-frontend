@@ -10,7 +10,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ShippingPolicy from "./components/ShippingPolicy";
 import TermsOfService from "./components/TermsOfService";
-
+import PrivacyPolicy from "./Page/PrivacyPolicy";
 import {
   HomePage,
   CartPage,
@@ -93,7 +93,7 @@ function App() {
 
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
-          {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/about" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
           <Route path="/blog" element={<></>} />
