@@ -19,6 +19,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { formatCurrency } from "../utils/formatCurrency";
 
 const ProductScreen = () => {
   const [product, setProduct] = useState(null);
@@ -395,11 +396,7 @@ const ProductScreen = () => {
 
             <div className="flex items-center mb-6">
               <span className="text-3xl font-bold text-gray-900">
-                {Number(product.price)?.toLocaleString("en-IN", {
-                  minimumFractionDigits: 2,
-                  style: "currency",
-                  currency: "INR",
-                })}{" "}
+                {formatCurrency(product.price)}
                 <span className="text-xs">/kg</span>
               </span>
               <span className="ml-3 text-green-600 text-sm font-medium">
@@ -677,11 +674,7 @@ const ProductScreen = () => {
 
                 <div className="flex items-center mb-8">
                   <span className="text-4xl font-bold text-gray-900">
-                    {Number(product.price)?.toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      style: "currency",
-                      currency: "INR",
-                    })}{" "}
+                    {formatCurrency(product.price)}
                     <span className="text-xs">/kg</span>
                   </span>
                   <span className="ml-4 text-green-600 font-medium text-lg">

@@ -1,5 +1,7 @@
 import { Package, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { formatCurrency } from "../utils/formatCurrency";
+import { useNavigate } from "react-router-dom";
 
 const CartProduct = ({
   product,
@@ -10,6 +12,8 @@ const CartProduct = ({
   cartItemId,
 }) => {
   const [isQuantityLoading, setIsQuantityLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleDelete = () => {
     // id, qty, action, cartItemId
@@ -60,7 +64,8 @@ const CartProduct = ({
         <div className="product-image block">
           <div className="p-img flex ml-4">
             <img
-              className="h-32 w-32 object-cover rounded-md shadow-sm"
+              onClick={() => navigate(`/view-product/${product._id}`)}
+              className="h-32 cursor-pointer w-32 object-cover rounded-md shadow-sm"
               src={product.images[0]}
               alt={product.title}
             />
@@ -75,13 +80,9 @@ const CartProduct = ({
                 <h5 className="text-gray-900">
                   {/* <sup className="text-sm">₹</sup> */}
                   <span className="font-bold">
-                    {Number(product.price)?.toLocaleString("en-IN", {
-                      minimumFractionDigits: 2,
-                      style: "currency",
-                      currency: "INR",
-                    })}
+                    {formatCurrency(product.price)}
                   </span>
-                  <sup className="text-sm">00</sup>
+                  {/* <sup className="text-sm">00</sup> */}
                 </h5>
               </div>
 
