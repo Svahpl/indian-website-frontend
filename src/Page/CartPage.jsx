@@ -192,7 +192,13 @@ const CartPage = () => {
                 </h5>
               </div>
               <div>
-                <span className="font-bold text-lg">₹{subtotalPrice}</span>
+                <span className="font-bold text-lg">
+                  {Number(subtotalPrice).toLocaleString("en-IN", {
+                    minimumFractionDigits: 2,
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </span>
               </div>
             </div>
 
@@ -254,7 +260,13 @@ const CartPage = () => {
               <div className="mb-4">
                 <h3 className="text-lg font-normal mb-2">
                   Subtotal ({subtotalItems} items) :{" "}
-                  <span className="font-bold">₹{subtotalPrice}</span>
+                  <span className="font-bold">
+                    {Number(subtotalPrice)?.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      style: "currency",
+                      currency: "INR",
+                    })}
+                  </span>
                 </h3>
               </div>
 

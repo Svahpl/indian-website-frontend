@@ -7,9 +7,11 @@ import WishlistPage from "./WishlistPage";
 import MyOrdersPage from "./MyOrdersPage";
 import Invoice from "./Invoice";
 import Logout from "./Logout";
+import Error500Page from "./Error500Page"
 export {
   HomePage,
   Logout,
+  Error500Page,
   CartPage,
   AccountPage,
   ProductPage,

@@ -21,6 +21,7 @@ import {
   MyOrdersPage,
   Invoice,
   Logout,
+  Error500Page,
 } from "./Page/pageIndex";
 import ProductScreen from "./Page/ProductScreen";
 import { AddressManager } from "./components/compIndex";
@@ -97,14 +98,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
           <Route path="/blog" element={<></>} />
-          <Route
-            path="*"
-            element={
-              <>
-                <div>404 Not Found</div>
-              </>
-            }
-          />
+          <Route path="*" element={<><div>404 Not Found</div></>}/>
+          <Route path="/server-error" element={< Error500Page />} ></Route>
         </Routes>
       </div>
     </Router>

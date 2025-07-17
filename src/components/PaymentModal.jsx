@@ -224,7 +224,7 @@ const PaymentModal = ({
         }`}
       >
         {/* Mobile Modal */}
-        <div className="md:hidden bg-white rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto no-visible-scrollbar">
+        <div data-lenis-prevent className="md:hidden bg-white rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto no-visible-scrollbar">
           {/* Handle bar */}
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
@@ -433,7 +433,7 @@ const PaymentModal = ({
         </div>
 
         {/* Desktop Modal */}
-        <div className="hidden md:block bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto no-visible-scrollbar">
+        <div data-lenis-prevent className="hidden md:block bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto no-visible-scrollbar">
           {/* Header */}
           <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
             <div className="flex items-center space-x-4">

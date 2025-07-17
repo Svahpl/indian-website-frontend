@@ -73,9 +73,13 @@ const CartProduct = ({
               {/* Pricing */}
               <div className="ml-4 text-xl mt-3">
                 <h5 className="text-gray-900">
-                  <sup className="text-sm">₹</sup>
+                  {/* <sup className="text-sm">₹</sup> */}
                   <span className="font-bold">
-                    {product.price.toLocaleString()}
+                    {Number(product.price)?.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      style: "currency",
+                      currency: "INR",
+                    })}
                   </span>
                   <sup className="text-sm">00</sup>
                 </h5>
