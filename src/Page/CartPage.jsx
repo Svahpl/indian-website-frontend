@@ -166,44 +166,44 @@ const CartPage = () => {
       <Header />
       <LocationUI />
       {/* Cart Links */}
-      <div className="bg-gray-100 lg:bg-white h-9 font-medium text-black lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
+      <div className="bg-gray-100 dark:bg-gray-800 lg:bg-white lg:dark:bg-gray-900 h-9 font-medium text-black dark:text-white lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
         <ul className="flex content-center">
-          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 mt-1">
+          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 lg:dark:text-blue-400 mt-1">
             <Link to="/my-account/orders"> Orders </Link>
           </li>
-          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 mt-1">
+          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 lg:dark:text-blue-400 mt-1">
             <Link to="/my-account/wishlist"> Wishlist </Link>
           </li>
-          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 mt-1">
+          <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 lg:dark:text-blue-400 mt-1">
             <Link to="/my-account/addresses"> Addresses </Link>
           </li>
         </ul>
       </div>
 
       {/* Desktop Layout Container */}
-      <div className="lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
+      <div className="lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6 bg-white dark:bg-gray-900 min-h-screen">
         <div className="lg:flex lg:gap-6 lg:mt-4">
           {/* Main Content - Cart Items (Left Column on Desktop) */}
           <div className="lg:flex-1">
             {/* Mobile Subtotal - Hidden on Desktop */}
-            <div className="flex lg:hidden justify-between items-center px-4 py-3 bg-white border-b border-gray-200">
+            <div className="flex lg:hidden justify-between items-center px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <div>
-                <h5 className="font-medium text-lg">
+                <h5 className="font-medium text-lg text-black dark:text-white">
                   Subtotal ({subtotalItems} items):
                 </h5>
               </div>
               <div>
-                <span className="font-bold text-lg">
+                <span className="font-bold text-lg text-black dark:text-white">
                   {formatCurrency(subtotalPrice)}
                 </span>
               </div>
             </div>
 
             {/* Mobile Proceed To Buy Button - Hidden on Desktop */}
-            <div className="lg:hidden px-4 py-3 bg-white sticky bottom-0 z-10 border-t border-gray-200">
+            <div className="lg:hidden px-4 py-3 bg-white dark:bg-gray-800 sticky bottom-0 z-10 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => handleCheckout()}
-                className="w-full rounded-lg bg-green-800 text-white py-3 font-medium"
+                className="w-full rounded-lg bg-green-800 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white py-3 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={userCartItems.length === 0}
               >
                 Proceed To Buy ({subtotalItems} items)
@@ -212,17 +212,19 @@ const CartPage = () => {
 
             {/* Thematic Break */}
             <div className="mt-5">
-              <hr />
+              <hr className="border-gray-200 dark:border-gray-700" />
             </div>
 
             {/* Shopping Cart Header - Desktop Only */}
             <div className="hidden lg:block">
-              <h1 className="text-3xl font-normal mb-4">Shopping Cart</h1>
+              <h1 className="text-3xl font-normal mb-4 text-black dark:text-white">
+                Shopping Cart
+              </h1>
             </div>
 
             {/* Deselect All Items */}
             {/* <div className="deselect-div mt-2 mb-4">
-              <span className="ml-4 lg:ml-0 text-blue-600 text-sm cursor-pointer hover:underline">
+              <span className="ml-4 lg:ml-0 text-blue-600 dark:text-blue-400 text-sm cursor-pointer hover:underline">
                 Deselect all items
               </span>
             </div> */}
@@ -245,17 +247,19 @@ const CartPage = () => {
               })
             ) : (
               <div className="text-center py-10">
-                <p className="text-lg text-gray-600">Your cart is empty</p>
+                <p className="text-lg text-gray-600 dark:text-gray-300">
+                  Your cart is empty
+                </p>
               </div>
             )}
           </div>
 
           {/* Sidebar - Checkout Section (Right Column on Desktop) */}
           <div className="hidden lg:block lg:w-80">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 sticky top-4">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sticky top-4">
               {/* Subtotal Section */}
               <div className="mb-4">
-                <h3 className="text-lg font-normal mb-2">
+                <h3 className="text-lg font-normal mb-2 text-black dark:text-white">
                   Subtotal ({subtotalItems} items) :{" "}
                   <span className="font-bold">
                     {formatCurrency(subtotalPrice)}
@@ -266,18 +270,20 @@ const CartPage = () => {
               {/* Proceed to Buy Button */}
               <button
                 onClick={() => handleCheckout()}
-                className="w-full bg-green-800 text-lg lg:text-white text-black font-medium py-2 px-4 rounded-lg mb-4 transition-colors"
+                className="w-full bg-green-800 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-lg text-white font-medium py-2 px-4 rounded-lg mb-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={userCartItems.length === 0}
               >
                 Proceed to Buy
               </button>
 
               {/* EMI Available */}
-              <div className="border-t hidden pt-4">
+              <div className="border-t dark:border-gray-700 hidden pt-4">
                 <div className="flex justify-between items-center cursor-pointer">
-                  <span className="text-sm font-medium">EMI Available</span>
+                  <span className="text-sm font-medium text-black dark:text-white">
+                    EMI Available
+                  </span>
                   <svg
-                    className="w-4 h-4"
+                    className="w-4 h-4 text-black dark:text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -294,12 +300,12 @@ const CartPage = () => {
             </div>
 
             {/* Beauty Bestsellers Section */}
-            <div className="mt-6 bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="font-medium mb-4">
+            <div className="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <h3 className="font-medium mb-4 text-black dark:text-white">
                 Natural Wellness Favorites You'll Love
               </h3>
               <div className="space-y-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   Product recommendations handpicked for your health and
                   lifestyle.
                 </div>

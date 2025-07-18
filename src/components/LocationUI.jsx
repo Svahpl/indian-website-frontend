@@ -21,7 +21,8 @@ const LocationUI = () => {
       const longitude = position.coords.longitude;
       setUserLatitude(latitude);
       setUserLongitude(longitude);
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      // DEBUG CONSOLE LOG BELOW : -
+      // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
     }
 
     function error() {
@@ -64,12 +65,12 @@ const LocationUI = () => {
   }, [userLatitude, userLongitude]); // <- This effect runs when lat/lon changes
 
   return (
-    <div className="bg-mobile-green lg:bg-white lg:text-black mui-white h-10 mt-3 content-center lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
-      <span className="flex">
-        <MapPin className="mx-2" size={20} /> Deliver to{" "}
-        {`${removeDiacritics(city)}`}
-        <span className="ml-2">-</span>
-        <span className="city-name ml-2">
+    <div className="bg-mobile-green lg:bg-white dark:bg-gray-800 lg:text-black dark:text-white mui-white h-10 content-center lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
+      <span className="flex text-black dark:text-white">
+        <MapPin className="mx-2 text-black dark:text-white" size={20} /> Deliver
+        to {`${removeDiacritics(city)}`}
+        <span className="ml-2 text-black dark:text-gray-300">-</span>
+        <span className="city-name ml-2 text-black dark:text-gray-300">
           {postCode ? postCode : "pincode"}
         </span>
       </span>

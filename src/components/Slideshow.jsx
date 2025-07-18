@@ -1,22 +1,23 @@
-import React from 'react';
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { motion, AnimatePresence } from 'framer-motion';
-import {slideshowData} from "../data/slideshowData.js"
+import React from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { motion, AnimatePresence } from "framer-motion";
+import { slideshowData } from "../data/slideshowData.js";
 
 const Slideshow = () => {
   const formatDescription = (text) =>
-    text.split('\n').map((line, index) => {
+    text.split("\n").map((line, index) => {
       const trimmed = line.trim();
-      if (trimmed === '') return <br key={index} />;
-      const isHeading = trimmed === trimmed.toUpperCase() || trimmed.endsWith(':');
+      if (trimmed === "") return <br key={index} />;
+      const isHeading =
+        trimmed === trimmed.toUpperCase() || trimmed.endsWith(":");
       return (
         <p
           key={index}
           className={`mb-2 transition-all duration-300 ${
             isHeading
-              ? 'font-semibold text-gray-900 text-xs sm:text-sm md:text-lg tracking-tight'
-              : 'text-gray-800 text-xs sm:text-sm md:text-base leading-relaxed'
+              ? "font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm md:text-lg tracking-tight"
+              : "text-gray-800 dark:text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed"
           }`}
         >
           {trimmed}
@@ -25,7 +26,7 @@ const Slideshow = () => {
     });
 
   return (
-    <section className="w-full px-2 sm:px-4 md:px-8 py-8 bg-gradient-to-b from-gray-50 to-white overflow-visible">
+    <section className="w-full px-2 sm:px-4 md:px-8 py-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 overflow-visible">
       <Carousel
         autoPlay
         infiniteLoop
@@ -44,7 +45,7 @@ const Slideshow = () => {
               type="button"
               onClick={onClickHandler}
               title={label}
-              className="absolute z-20 left-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+              className="absolute z-20 left-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             >
               ‹
             </button>
@@ -56,7 +57,7 @@ const Slideshow = () => {
               type="button"
               onClick={onClickHandler}
               title={label}
-              className="absolute z-20 right-2 top-1/2 transform -translate-y-1/2 bg-white text-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+              className="absolute z-20 right-2 top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
             >
               ›
             </button>
@@ -71,12 +72,12 @@ const Slideshow = () => {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
               className={`flex flex-col ${
-                index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-              } items-center justify-between gap-4 sm:gap-6 md:gap-8 bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl p-4 sm:p-6 md:p-8 max-w-7xl mx-auto`}
+                index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+              } items-center justify-between gap-4 sm:gap-6 md:gap-8 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl dark:shadow-gray-800/50 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto`}
             >
               {/* Image */}
               <motion.div
-                className="w-full md:w-1/2 relative overflow-hidden rounded-lg sm:rounded-xl shadow-md sm:shadow-lg"
+                className="w-full md:w-1/2 relative overflow-hidden rounded-lg sm:rounded-xl shadow-md sm:shadow-lg dark:shadow-gray-800/50"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}
               >
@@ -95,7 +96,7 @@ const Slideshow = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
-                  className="text-lg sm:text-xl md:text-3xl font-bold sm:font-extrabold text-gray-900 mb-3 sm:mb-5 tracking-tight"
+                  className="text-lg sm:text-xl md:text-3xl font-bold sm:font-extrabold text-gray-900 dark:text-gray-100 mb-3 sm:mb-5 tracking-tight"
                 >
                   {slide.title}
                 </motion.h2>
@@ -103,7 +104,7 @@ const Slideshow = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed max-h-[200px] sm:max-h-[300px] md:max-h-[400px] overflow-y-auto pr-2"
+                  className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed max-h-[200px] sm:max-h-[300px] md:max-h-[400px] overflow-y-auto pr-2"
                 >
                   {formatDescription(slide.description)}
                 </motion.div>

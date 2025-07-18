@@ -60,24 +60,24 @@ const CartProduct = ({
 
   return (
     <>
-      <div className="mt-2 bg-gray-50 py-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="mt-2 bg-gray-50 dark:bg-gray-800 py-4 rounded-lg shadow-sm hover:shadow-md dark:shadow-gray-900/50 dark:hover:shadow-gray-900/70 transition-shadow duration-200">
         <div className="product-image block">
           <div className="p-img flex ml-4">
             <img
               onClick={() => navigate(`/view-product/${product._id}`)}
-              className="h-32 cursor-pointer w-32 object-cover rounded-md shadow-sm"
+              className="h-32 cursor-pointer w-32 object-cover rounded-md shadow-sm dark:shadow-gray-900/50"
               src={product.images[0]}
               alt={product.title}
             />
             <div className="productTitle flex-1">
               {/* Product Title */}
-              <p className="text-sm ml-4 leading-relaxed text-gray-800 font-medium">
+              <p className="text-sm ml-4 leading-relaxed text-gray-800 dark:text-gray-200 font-medium">
                 {product.title}
               </p>
 
               {/* Pricing */}
               <div className="ml-4 text-xl mt-3">
-                <h5 className="text-gray-900">
+                <h5 className="text-gray-900 dark:text-gray-100">
                   {/* <sup className="text-sm">₹</sup> */}
                   <span className="font-bold">
                     {formatCurrency(product.price)}
@@ -88,10 +88,10 @@ const CartProduct = ({
 
               {/* Weight */}
               <div className="ml-4 mt-2">
-                <span className="text-sm text-gray-700 font-semibold">
+                <span className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
                   Weight:
                 </span>
-                <span className="ml-1 text-sm text-gray-600">
+                <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
                   {product.weight}
                   <b> kg</b>
                 </span>
@@ -99,10 +99,10 @@ const CartProduct = ({
 
               {/* Delivery Details */}
               {/* <div className="mt-3 ml-4">
-                <span className="ml-3 text-sm font-semibold text-gray-700">
+                <span className="ml-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {product.deliveryDate}
                 </span>
-                <span className="text-xs text-gray-500 ml-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                   for SVAH Members
                 </span>
               </div> */}
@@ -110,24 +110,27 @@ const CartProduct = ({
               {/* Stock Check
                     <div
                       className={`text-sm ml-4 mt-2 font-semibold ${
-                        product.inStock ? "text-green-600" : "text-red-600"
+                        product.inStock ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                       }`}
                     >
                       {product.inStock ? "In Stock" : "Out of Stock"}
                     </div> */}
 
               {/* Sold By */}
-              <div className="flex text-sm ml-4 mt-2 text-gray-600">
+              <div className="flex text-sm ml-4 mt-2 text-gray-600 dark:text-gray-400">
                 Sold By
-                <span className="mx-1 text-blue-500 underline hover:text-blue-600 cursor-pointer transition-colors">
+                <span className="mx-1 text-blue-500 dark:text-blue-400 underline hover:text-blue-600 dark:hover:text-blue-300 cursor-pointer transition-colors">
                   {`SVAH Agros & Herbs`}
                 </span>
               </div>
 
               {/* Delivered By */}
               <div className="flex items-center ml-4 mt-2">
-                <Package className="text-gray-600" size={18} />
-                <span className="text-sm ml-2 text-gray-600">
+                <Package
+                  className="text-gray-600 dark:text-gray-400"
+                  size={18}
+                />
+                <span className="text-sm ml-2 text-gray-600 dark:text-gray-400">
                   SVAH Delivered
                 </span>
               </div>
@@ -136,9 +139,9 @@ const CartProduct = ({
 
           {/* Cart Action Buttons */}
           <div className="flex mt-2 h-20 ml-2 gap-4 items-center">
-            <div className="relative w-32 ml-1 border-none bg-green-800 rounded-lg py-2 px-2 text-center">
+            <div className="relative w-32 ml-1 border-none bg-green-800 dark:bg-green-700 rounded-lg py-2 px-2 text-center">
               <button
-                className="absolute text-white left-2 text-2xl px-2 top-1/2 -translate-y-1/2 cursor-pointer transition-colors duration-200 hover:bg-green-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute text-white left-2 text-2xl px-2 top-1/2 -translate-y-1/2 cursor-pointer transition-colors duration-200 hover:bg-green-700 dark:hover:bg-green-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleQuantityDecrease}
                 disabled={product.quantity <= 1 || isQuantityLoading}
               >
@@ -157,7 +160,7 @@ const CartProduct = ({
               </div>
 
               <button
-                className="absolute text-white right-2 top-1/2 -translate-y-1/2 font-bold text-lg cursor-pointer transition-colors duration-200 hover:bg-green-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute text-white right-2 top-1/2 -translate-y-1/2 font-bold text-lg cursor-pointer transition-colors duration-200 hover:bg-green-700 dark:hover:bg-green-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleQuantityIncrease}
                 disabled={isQuantityLoading}
               >
@@ -166,14 +169,14 @@ const CartProduct = ({
             </div>
 
             <div
-              className="relative ml-2 w-20 border-none bg-green-800 text-white rounded-lg py-2 px-2 text-center flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-green-700"
+              className="relative ml-2 w-20 border-none bg-green-800 dark:bg-green-700 text-white rounded-lg py-2 px-2 text-center flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-green-700 dark:hover:bg-green-600"
               onClick={handleDelete}
             >
               <span className="block text-sm font-medium">Delete</span>
             </div>
 
             <div
-              className="ml-2 bg-green-800 text-white w-32 mx-2 border-none rounded-lg py-2 px-2 text-center flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-green-700"
+              className="ml-2 bg-green-800 dark:bg-green-700 text-white w-32 mx-2 border-none rounded-lg py-2 px-2 text-center flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-green-700 dark:hover:bg-green-600"
               onClick={handleAddToWishlist}
             >
               <span className="capitalize text-sm font-medium">

@@ -122,7 +122,7 @@ const Footer = () => {
   );
 
   return (
-    <footer className="bg-gray-900 text-gray-200 pt-12 pb-6 mt-10" role="contentinfo">
+    <footer className="bg-gray-900 text-gray-200 pt-12 pb-6" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Footer */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 border-b border-gray-700 pb-8">
