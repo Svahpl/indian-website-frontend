@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { formatCurrency } from "../utils/formatCurrency";
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -829,45 +830,43 @@ Thank you for shopping with Natural Store!
                         {order.items.map((item) => (
                           <div
                             key={item._id}
-                            className="flex flex-col sm:flex-row items-start gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg"
+                            className="flex flex-col sm:flex-row items-start gap-4 p-4 bg-gradient-to-br from-emerald-100 to-green-50 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg"
                           >
                             <img
                               src={item.images[0]}
                               alt={item.title}
-                              className="w-full sm:w-16 h-16 object-cover rounded-lg shadow"
+                              className="w-full sm:w-20 h-20 object-cover rounded-xl shadow-inner border border-emerald-200"
                             />
+
                             <div className="flex-1 w-full">
-                              <h5 className="text-sm md:text-base font-semibold text-gray-800">
+                              <h5 className="text-base md:text-lg font-semibold text-emerald-800 mb-1">
                                 {item.title}
                               </h5>
-                              <p className="text-xs md:text-sm text-gray-600">
+                              <p className="text-sm md:text-base text-gray-700">
                                 Weight: {item.weight}kg
                               </p>
-                              <div className="flex flex-wrap gap-2 mt-1.5 text-xs md:text-sm">
-                                <span className="text-green-600 font-semibold">
-                                  ₹{item.price?.toFixed(2)}
+
+                              <div className="inline-flex flex-wrap gap-3 mt-4 bg-emerald-700/90 text-white px-4 py-3 rounded-xl shadow">
+                                <span className="px-3 py-1 bg-yellow-300 text-black rounded-full text-sm md:text-base font-bold shadow-sm">
+                                  {formatCurrency(item.price)}
                                 </span>
-                                <span className="text-gray-500">
+                                <span className="bg-white/20 px-3 py-1 rounded-md text-sm md:text-base font-medium">
                                   Qty: {item.quantity}
                                 </span>
-                                <span className="text-gray-800 font-semibold">
-                                  Total: ₹
-                                  {(item.price * item.quantity).toFixed(2)}
+                                <span className="bg-white/20 px-3 py-1 rounded-md text-sm md:text-base font-semibold">
+                                  Total:{" "}
+                                  {formatCurrency(item.price * item.quantity)}
                                 </span>
                               </div>
 
-                              {/* Add rating button for delivered orders */}
                               {order.orderStatus.toLowerCase() ===
                                 "delivered" && (
-                                <div className="mt-2 flex justify-end">
+                                <div className="mt-4 flex justify-end">
                                   <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      openRatingModal(item);
-                                    }}
-                                    className="text-xs md:text-sm bg-amber-500 text-white px-2 py-1 rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-1"
+                                    onClick={() => openRatingModal(item)}
+                                    className="text-sm md:text-base bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg transition-all flex items-center gap-2 shadow"
                                   >
-                                    <Star className="w-3 h-3" />
+                                    <Star className="w-4 h-4" />
                                     Rate Product
                                   </button>
                                 </div>
@@ -885,7 +884,7 @@ Thank you for shopping with Natural Store!
                           Total Amount (With Shipping):
                         </span>{" "}
                         <span className="text-lg md:text-2xl font-bold text-green-600">
-                          ₹{order.totalAmount.toFixed(2)}
+                          {formatCurrency(order.totalAmount)}
                         </span>
                       </div>
                     </div>
@@ -898,7 +897,7 @@ Thank you for shopping with Natural Store!
 
         {/* Order Details Modal */}
         {showOrderModal && selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <div data-lenis-prevent className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="p-5 md:p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -1050,13 +1049,13 @@ Thank you for shopping with Natural Store!
                           </p>
                           <div className="flex flex-wrap gap-3 text-sm">
                             <span className="text-green-600 font-semibold">
-                              ₹{item.price?.toFixed(2)}
+                              {formatCurrency(item.price)}
                             </span>
                             <span className="text-gray-500">
                               Qty: {item.quantity}
                             </span>
                             <span className="text-gray-800 font-semibold">
-                              Total: ₹{(item.price * item.quantity).toFixed(2)}
+                              Total: {formatCurrency(item.price * item.quantity)}
                             </span>
                           </div>
                         </div>
@@ -1085,7 +1084,7 @@ Thank you for shopping with Natural Store!
                       Order Total:
                     </span>
                     <span className="text-xl font-bold text-green-600">
-                      ₹{selectedOrder.totalAmount.toFixed(2)}
+                      {formatCurrency(selectedOrder.totalAmount)}
                     </span>
                   </div>
                 </div>
