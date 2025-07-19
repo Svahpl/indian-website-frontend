@@ -166,7 +166,7 @@ const CartPage = () => {
       <Header />
       <LocationUI />
       {/* Cart Links */}
-      <div className="bg-gray-100 dark:bg-gray-800 lg:bg-white lg:dark:bg-gray-900 h-9 font-medium text-black dark:text-white lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6">
+      <div className="bg-gray-100 lg:pl-36 dark:bg-gray-800 lg:bg-white lg:dark:bg-gray-900 h-9 font-medium text-black dark:text-white lg:max-w-full lg:mx-auto lg:px-4 sm:px-6">
         <ul className="flex content-center">
           <li className="mx-2 cursor-pointer lg:underline lg:text-blue-500 lg:dark:text-blue-400 mt-1">
             <Link to="/my-account/orders"> Orders </Link>
@@ -181,8 +181,8 @@ const CartPage = () => {
       </div>
 
       {/* Desktop Layout Container */}
-      <div className="lg:max-w-7xl lg:mx-auto lg:px-4 sm:px-6 bg-white dark:bg-gray-900 min-h-screen">
-        <div className="lg:flex lg:gap-6 lg:mt-4">
+      <div className="lg:max-w-full lg:mx-auto lg:px-4 sm:px-6 bg-white dark:bg-gray-900 min-h-screen">
+        <div className="lg:flex lg:gap-6 lg:pl-36">
           {/* Main Content - Cart Items (Left Column on Desktop) */}
           <div className="lg:flex-1">
             {/* Mobile Subtotal - Hidden on Desktop */}

@@ -31,34 +31,34 @@ const AccountPage = () => {
 
   const AccountSection = ({ title, items, className = "" }) => (
     <div
-      className={`bg-white rounded-2xl border border-gray-200 p-4 md:p-6 ${className}`}
+      className={`bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 ${className}`}
     >
-      <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
+      <h2 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-4">
         {title}
       </h2>
-      <div className="space-y-0 divide-y divide-gray-100">
+      <div className="space-y-0 divide-y divide-gray-100 dark:divide-gray-700">
         {items.map((item, index) => (
           <div
             key={index}
-            className="flex items-center justify-between py-3 md:py-4 hover:bg-gray-50 cursor-pointer group"
+            className="flex items-center justify-between py-3 md:py-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer group"
             onClick={() => item.link && navigate(item.link)}
           >
             <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="font-green group-hover:font-green">
+              <div className="font-green group-hover:font-green text-gray-700 dark:text-gray-300">
                 {item.icon}
               </div>
               <div>
-                <h3 className="font-medium text-gray-900 text-sm md:text-base">
+                <h3 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">
                   {item.title}
                 </h3>
                 {item.description && (
-                  <p className="text-xs md:text-sm text-gray-600 mt-1">
+                  <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1">
                     {item.description}
                   </p>
                 )}
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-hover:text-gray-600" />
+            <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
           </div>
         ))}
       </div>
@@ -218,9 +218,9 @@ const AccountPage = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 md:mb-8">
             Your Account
           </h1>
 
@@ -241,16 +241,20 @@ const AccountPage = () => {
             {quickAccessItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md dark:hover:shadow-gray-700/20 transition-shadow cursor-pointer"
                 onClick={() => item.link && navigate(item.link)}
               >
                 <div className="flex items-start space-x-4">
-                  <div className="font-green">{item.icon}</div>
+                  <div className="font-green text-gray-700 dark:text-gray-300">
+                    {item.icon}
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-600">{item.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               </div>

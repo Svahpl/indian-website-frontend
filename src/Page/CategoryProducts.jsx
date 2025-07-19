@@ -120,21 +120,23 @@ const CategoryProducts = () => {
       <Header />
       {isLoading && <LoadingOverlay />}
       {/* {dummyProducts.length == 0 ? navigate("/server-error") : null} */}
-      <div className="categorySearchContainer mb-16 px-4 lg:px-24">
+      <div className="categorySearchContainer mb-16 px-4 lg:px-24 bg-white dark:bg-gray-900 min-h-screen">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters */}
           <div className="w-full lg:w-1/3 xl:w-1/4">
-            <h1 className="text-2xl font-semibold mb-4">Filters</h1>
+            <h1 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Filters
+            </h1>
 
             {/* Category Filter */}
             <div className="mb-6">
-              <label className="block text-lg font-medium text-gray-700 mb-1">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Select Category
               </label>
               <select
                 onChange={(e) => handleCategoryChange(e.target.value)}
                 disabled={isLoading}
-                className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 {[
                   ...new Set(
@@ -155,13 +157,13 @@ const CategoryProducts = () => {
 
             {/* Key Ingredients Filter */}
             <div className="mb-6">
-              <label className="block text-lg font-medium text-gray-700 mb-1">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Key Ingredients
               </label>
               <select
                 onChange={(e) => handleSubCategoryChange(e.target.value)}
                 disabled={isLoading}
-                className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 {[
                   ...new Set(allProducts.map((product) => product.subcategory)),
@@ -173,7 +175,7 @@ const CategoryProducts = () => {
 
             {/* Price Range Filter */}
             <div className="mb-6">
-              <label className="block text-lg font-medium text-gray-700 mb-1">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Price Range
               </label>
               <input
@@ -186,16 +188,16 @@ const CategoryProducts = () => {
                   setPrice(e.target.value);
                   handlePriceFilter(e.target.value);
                 }}
-                className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-black disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
+                className="w-full h-1 bg-gray-700 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-black dark:accent-white disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
               />
-              <p className="text-sm mt-1 text-gray-400">
+              <p className="text-sm mt-1 text-gray-400 dark:text-gray-500">
                 Up to {formatCurrency(price)}
               </p>
             </div>
 
             {/* Customer Rating Filter */}
             <div className="mb-6">
-              <label className="block text-lg font-medium text-gray-700 mb-1">
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Customer Rating
               </label>
               <select
@@ -203,7 +205,7 @@ const CategoryProducts = () => {
                 value={selectedRating}
                 onChange={(e) => handleRatingChange(e.target.value)}
                 disabled={isLoading}
-                className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black dark:focus:ring-white dark:focus:border-white disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 <option value="">All Ratings</option>
                 {ratingFilter.map((n) => (
@@ -219,7 +221,7 @@ const CategoryProducts = () => {
               <button
                 onClick={clearFilter}
                 disabled={isLoading}
-                className="flex items-center gap-2 bg-green-800 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition duration-300 ease-in-out hover:bg-green-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-950"
+                className="flex items-center gap-2 bg-green-800 dark:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition duration-300 ease-in-out hover:bg-green-900 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-950 dark:disabled:hover:bg-green-900"
               >
                 <X size={18} />
                 Clear Filters
