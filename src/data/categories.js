@@ -24,7 +24,17 @@ export const productCategories = [
       { id: 209, name: 'HONEY AND NUTRITIONAL FOOD PRODUCTS', image: '/images/HONEYANDNUTRITIONALFOODPRODUCTS.jpg' },
       { id: 210, name: 'NATURAL FOOD COLOUR INGREDIENTS & ESSENCE FLAVORS', image: '/images/NATURALFOODCOLOURINGREDIENTSANDESSENCEFLAVORS.jpg' },
       { id: 211, name: 'PICKLES', image: '/images/PICKELS.jpg' },
-      { id: 212, name: 'OTHER FOOD PRODUCTS', image: '/images/OTHER.jpg' }
+      { id: 212, name: 'NUTRITIONAL FOOD PRODUCTS', image:'/images/NUTRITIONALFOODPRODUCTS.jpg'},
+      { id: 213 , name: 'TEA PRODUCTS',image:'/images/TEAPRODUCTS.jpg' },
+      { id: 214 , name: 'NATURAL FARMING FRESH FRUITS',image:'/images/NATURALFARMINGFRESHFRUITS.jpg' },
+      { id: 215, name: 'NATURAL FARMING DRIED VEGETABLE PRODUCTS', image: '/images/NATURALFARMINGDRIEDVEGETABLEPRODUCTS.jpg' },
+      { id: 216, name: 'NATURAL FARMING TUBER FOOD PRODUCTS', image: '/images/NATURALFARMINGTUBERFOODPRODUCTS.jpg' },
+      { id: 217, name: 'NATURAL FARMING PULSES', image: '/images/NATURALFARMINGPULSES.jpg' },
+      { id: 218, name: 'NATURAL FARMING MEDICINAL FOOD PRODUCTS', image: '/images/NATURALFARMINGMEDICINALFOODPRODUCTS.jpg' },
+      { id: 219, name: 'NATURAL FARMING FRESH VEGETABLES', image: '/images/NATURALFARMINGFRESHVEGETABLES.jpg' },
+      { id: 220, name: 'NATURAL FARMING MILLET PRODUCTS', image: '/images/NATURALFARMINGMILLETPRODUCTS.jpg' },
+      { id: 221, name: 'FOOD ESSENCE FLAVOUR PRODUCTS', image: '/images/FOODESSENCEFLAVOURPRODUCTS.jpg' },
+      { id: 222, name: 'OTHER FOOD PRODUCTS', image: '/images/OTHER.jpg' }
     ]
   },
   {
@@ -32,7 +42,8 @@ export const productCategories = [
     name: 'NATURAL COSMETIC PRODUCTS',
     subcategories: [
       { id: 301, name: 'NATURAL FACE PACK AND BODY PACK PRODUCTS', image: '/images/NATURALFACEPACKANDBODYACKPRODUCTS.jpg' },
-      { id: 302, name: 'NATURAL HAIR SHAMPOO AND HEALTHY HAIR PRODUCTS', image: '/images/NATURAL.jpg' }
+      { id: 302, name: 'NATURAL HAIR SHAMPOO AND HEALTHY HAIR PRODUCTS', image: '/images/NATURAL.jpg' },
+      { id: 303, name: 'NATURAL HAIR SHAMPOO PRODUCTS', image:'/images/NATURALHAIRSHAMPOOPRODUCTS.jpg'}
     ]
   },
   {
@@ -47,7 +58,8 @@ export const productCategories = [
     name: 'WOOD AND BAMBOO PRODUCTS',
     subcategories: [
       { id: 501, name: 'WOOD PRODUCTS', image: '/images/slide19.jpg' },
-      { id: 502, name: 'BAMBOO PRODUCTS', image: '/images/slide18.jpg' }
+      { id: 502, name: 'BAMBOO PRODUCTS', image: '/images/slide18.jpg' },
+      { id: 503, name: 'SHOWCASE AND DECORATIVE ACCESSORIES', image: '/images/SHOWCASEANDDECORATIVEACCESSORIES.jpg' },
     ]
   },
   {
@@ -63,7 +75,9 @@ export const productCategories = [
     name: 'LEAF AND PAPER PRODUCTS',
     subcategories: [
       { id: 701, name: 'LEAF PRODUCTS', image: '/images/LEAF.jpg' },
-      { id: 702, name: 'PAPER PRODUCTS', image: '/images/PAPER.jpg' }
+      { id: 702, name: 'NATURAL FARMING DRIED LEAFY VEGETABLE PRODUCTS', image: '/images/NATURALFARMINGDRIEDLEAFYVEGETABLEPRODUCTS.jpg'},
+      { id: 703, name: 'PAPER PRODUCTS', image: '/images/PAPER.jpg' },
+      { id: 704, name: 'CARDBOARDS', image: '/images/CARDBOARDS.jpg'}
     ]
   },
   {
@@ -71,7 +85,9 @@ export const productCategories = [
     name: 'SEEDS AND SEED BALLS',
     subcategories: [
       { id: 801, name: 'SEEDS', image: '/images/SEEDS.jpg' },
-      { id: 802, name: 'SEEDBALLS', image: '/images/SEEDBALLS.jpg' }
+      { id: 802, name: 'SEED BALLS', image: '/images/SEEDBALLS.jpg' },
+      { id: 803, name: 'OIL SEEDS', image: '/images/OILSEEDS.jpg' },
+      
     ]
   },
   {
@@ -87,7 +103,9 @@ export const productCategories = [
     name: 'ANIMAL FEED SUPPLEMENTS AND DECORATION FLOWERS',
     subcategories: [
       { id: 1001, name: 'ANIMAL AND AQUA FEED SUPPLEMENTS', image: '/images/ANIMAL.jpg' },
-      { id: 1002, name: 'FRESH DECORATION FLOWERS', image: '/images/FRESH.jpg' }
+      { id: 1002, name: 'FRESH DECORATION FLOWERS', image: '/images/FRESH.jpg' },
+      { id: 1003, name: 'ANIMAL FEED SUPPLEMENTS', image: '/images/ANIMALFEEDSUPPLEMENTS.jpg' },
+      
     ]
   },
   {
@@ -95,9 +113,23 @@ export const productCategories = [
     name: 'SVAH - SRI VENKATESWARA PLANT NURSERY',
     subcategories: [
       { id: 1101, name: 'PLANTS', image: '/images/PLANTS.jpg' },
-      { id: 1102, name: 'SAPLINGS', image: '/images/SAPLINGS.jpg' },
+      { id: 1102, name: 'SAPLINGS', image: '/images/SAPLINGS1.jpg' },
       { id: 1103, name: 'GRASS AND STUMPS', image: '/images/GRASS.jpg' },
-      { id: 1104, name: 'COMPOST AND NATURAL INSECT CONTROL PRODUCTS', image: '/images/COMPOST.jpg' }
+      { id: 1104, name: 'FARM YARD MANURE', image: '/images/FARMYARDMANURE.jpg' },
+      { id: 1105, name: 'COMPOST AND NATURAL INSECT CONTROL PRODUCTS', image: '/images/COMPOST.jpg' },
+      { id: 1106, name: 'GRASS PRODUCTS', image: '/images/GRASSPRODUCTS.jpg' },
+    ]
+  },
+  {
+    id: 12,
+    name: 'SVAH - SRI VENKATESWARA OTHER PRODUCTS',
+    subcategories: [
+      { id: 110, name: 'SEA SHELLS', image: '/images/SEASHELLS.jpg' },
+      { id: 111, name: 'NATURAL HOLI COLOURS', image: '/images/NATURALHOLICOLOURS.jpg' },
+      { id: 112, name: 'NATURAL FARMING RAW SPICE PRODUCTS',image:'/images/NATURALFARMINGRAWSPICEPRODUCTS.jpg'},
+      { id: 113, name: 'CLEANING PRODUCTS', image: '/images/CLEANINGPRODUCTS.jpg' },
+      { id: 114, name: 'RUBBER PRODUCTS', image: '/images/RUBBERPRODUCTS.jpg' },
+      
     ]
   }
 ];
